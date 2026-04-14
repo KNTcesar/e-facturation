@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+/* Global design tokens used across the frontend shell and shared UI blocks. */
+:root {
+  --sfe-bg: radial-gradient(circle at 15% 0%, #ecf7f7 0%, #f3f6fb 40%, #eef2f8 100%);
+  --sfe-title: #0a2238;
+  --sfe-text: #2a3543;
+  --sfe-muted: #617083;
+  --sfe-border: rgba(0, 95, 115, 0.16);
+  --sfe-shadow: 0 16px 40px rgba(10, 34, 56, 0.08);
+  --sfe-panel-tint-a: #e0f2f7;
+  --sfe-panel-tint-b: #d4ebf3;
+  --sfe-panel-tint-c: #eaf7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Base document styling: keep the app full-height and apply the global visual theme. */
+html,
+body,
+#app {
+  margin: 0;
+  min-height: 100%;
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: var(--sfe-text);
+  background: var(--sfe-bg);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--sfe-title);
+  letter-spacing: -0.015em;
+}
+
+/* Responsive card grid used by dashboard-like pages. */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+/* Shared card surface for content blocks that should feel slightly elevated. */
+.module-card {
+  border: 1px solid var(--sfe-border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--sfe-shadow);
+}
+
+/* KPI values are intentionally large so numbers stay scannable. */
+.kpi-number {
+  font-size: 1.8rem;
+  line-height: 1;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Secondary text for metric labels and supporting copy. */
+.kpi-label {
+  margin: 0.25rem 0 0;
+  color: var(--sfe-muted);
+  font-size: 0.86rem;
+}
+
+/* Soft panels are used when the UI should feel calmer than a standard card. */
+.soft-panel {
+  border: 1px solid var(--sfe-border);
+  border-radius: 16px;
+  background: linear-gradient(160deg, var(--sfe-panel-tint-c), var(--sfe-panel-tint-a));
+  box-shadow: 0 10px 28px rgba(10, 34, 56, 0.06);
+}
+
+/* Dialog content keeps the same tinted language as the rest of the app. */
+.v-overlay__content > .v-card {
+  border: 1px solid var(--sfe-border);
+  background: linear-gradient(155deg, var(--sfe-panel-tint-c), var(--sfe-panel-tint-b));
+}
+
+/* Tables stay compact, readable, and aligned with the visual system. */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Shared spacing and rhythm for header and body cells. */
+.data-table th,
+.data-table td {
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(10, 34, 56, 0.08);
+  font-size: 0.92rem;
+}
+
+/* Column headings should read as metadata rather than primary content. */
+.data-table th {
+  color: var(--sfe-muted);
+  font-weight: 600;
+}
+
+/* Monospace helper for identifiers, codes, and technical values. */
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
