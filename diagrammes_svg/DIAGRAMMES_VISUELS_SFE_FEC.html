@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagrammes Visuels - SFE FEC Burkina</title>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      securityLevel: 'loose'
+    });
+  </script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: #f5f7fb;
+      color: #1c2430;
+      line-height: 1.45;
+    }
+
+    header {
+      padding: 24px;
+      background: linear-gradient(120deg, #0f3d66, #1769aa);
+      color: #fff;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+
+    main {
+      max-width: 1300px;
+      margin: 24px auto;
+      padding: 0 16px 32px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #dfe6ef;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(16, 38, 64, 0.06);
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      color: #0f3d66;
+    }
+
+    p {
+      margin: 0 0 10px;
+    }
+
+    .mermaid {
+      overflow-x: auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px;
+    }
+
+    .doc {
+      margin-top: 12px;
+      background: #f8fbff;
+      border: 1px solid #d8e8f8;
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .doc h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: #114d82;
+    }
+
+    .doc ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .doc li {
+      margin-bottom: 6px;
+    }
+
+    .doc table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    .doc th,
+    .doc td {
+      border: 1px solid #d8e8f8;
+      text-align: left;
+      padding: 8px;
+      vertical-align: top;
+    }
+
+    .doc th {
+      background: #eef6ff;
+      color: #114d82;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Diagrammes Visuels - SFE FEC Burkina</h1>
+    <p>Backend: Spring Boot | Frontend: Vue.js + TypeScript | Portee: Phase 1 Conformite</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1) Diagramme de cas d'utilisation</h2>
+      <div class="mermaid">
+flowchart LR
+  %% Acteurs (gauche)
+  subgraph ACTL[Acteurs internes]
+    direction TB
+    ADM[Administrateur]
+    CPT[Comptable]
+    CAI[Caissier]
+    AUD[Auditeur fiscal]
+  end
+
+  %% Systeme (centre)
+  subgraph SYS[Systeme de Facturation d'Entreprise - FEC]
+    direction TB
+    UC1((Se connecter))
+    UC2((Administrer parametres et utilisateurs))
+    UC3((Gerer referentiel clients et produits))
+    UC4((Emettre facture certifiee))
+    UC5((Transmettre et suivre statut SECeF))
+    UC6((Corriger rejet et retransmettre))
+    UC7((Annuler par avoir))
+    UC8((Consulter archives et journal d'audit))
+    UC9((Generer rapport de conformite))
+    UC10((Verifier authenticite via QR))
+  end
+
+  %% Acteurs (droite)
+  subgraph ACTR[Acteurs externes]
+    direction TB
+    CLI[Client]
+    DGI[DGI / SECeF]
+  end
+
+  %% Liens lisibles (minimum)
+  ADM --> UC1
+  ADM --> UC2
+  ADM --> UC9
+
+  CPT --> UC1
+  CPT --> UC3
+  CPT --> UC4
+  CPT --> UC5
+  CPT --> UC6
+  CPT --> UC7
+  CPT --> UC8
+
+  CAI --> UC1
+  CAI --> UC4
+  CAI --> UC8
+
+  AUD --> UC8
+  AUD --> UC9
+
+  DGI --> UC5
+  DGI --> UC6
+  CLI --> UC10
+
+  %% Dependances principales uniquement
+  UC4 -. produit .-> UC5
+  UC5 -. en cas rejet .-> UC6
+  UC4 -. trace .-> UC8
+  UC7 -. trace .-> UC8
+      </div>
+      <div class="doc">
+        <h3>Documentation du diagramme</h3>
+        <ul>
+          <li><strong>Perimetre volontairement simplifie:</strong> le diagramme montre 10 cas metier lisibles, sans detail interne de calcul ou de signature.</li>
+          <li><strong>Roles internes:</strong> Administrateur gere configuration et conformite, Comptable porte le flux complet de facturation, Caissier se limite a emission/consultation, Auditeur lit archives et rapports.</li>
+          <li><strong>Roles externes:</strong> DGI/SECeF n'intervient que sur la transmission et le retour de statut; Client intervient uniquement pour la verification QR.</li>
+          <li><strong>Dependances essentielles:</strong> UC4 emettre facture certifiee produit UC5 transmission; UC5 mene vers UC6 uniquement en cas de rejet.</li>
+          <li><strong>Traçabilite explicite:</strong> UC4 et UC7 alimentent UC8 afin de garantir la preuve d'audit sans surcharger le diagramme.</li>
+        </ul>
+        <table>
+          <thead>
+            <tr><th>Cas</th><th>Declencheur</th><th>Resultat attendu</th><th>Preuve stockee</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>UC4 Emettre facture certifiee</td><td>Validation de saisie</td><td>Facture numerotee, certifiee, prete a envoyer</td><td>Facture + donnees de conformite</td></tr>
+            <tr><td>UC5 Transmettre et suivre SECeF</td><td>Facture certifiee</td><td>Statut accepte/rejete/pending</td><td>TransmissionSecef + hash payload + code retour</td></tr>
+            <tr><td>UC6 Corriger rejet et retransmettre</td><td>Motif de rejet DGI</td><td>Facture corrigee puis renvoyee</td><td>Historique de corrections et tentatives</td></tr>
+            <tr><td>UC7 Annuler par avoir</td><td>Demande d'annulation validee</td><td>Regularisation legale sans suppression</td><td>Avoir + entree journal audit</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2) Diagramme de classes</h2>
+      <div class="mermaid">
+classDiagram
+    direction LR
+    class Entreprise
+    class Utilisateur
+    class Role
+    class Client
+    class Produit
+    class SerieFacture
+    class Facture
+    class LigneFacture
+    class ResumeTaxeFacture
+    class Avoir
+    class ScellementNumerique
+    class JournalAudit
+    class TransmissionSecef
+    class RapportConformite
+    class PieceJointe
+
+    Entreprise "1" --> "*" Utilisateur
+    Utilisateur "*" --> "*" Role
+    Entreprise "1" --> "*" Client
+    Entreprise "1" --> "*" Produit
+    Entreprise "1" --> "*" SerieFacture
+    Entreprise "1" --> "*" Facture
+    Client "1" --> "*" Facture
+    SerieFacture "1" --> "*" Facture
+    Facture "1" --> "*" LigneFacture
+    Facture "1" --> "*" ResumeTaxeFacture
+    Facture "1" --> "0..1" ScellementNumerique
+    Facture "1" --> "*" TransmissionSecef
+    Facture "1" --> "*" PieceJointe
+    Facture "1" --> "0..*" Avoir
+    Utilisateur "1" --> "*" JournalAudit
+    Facture "1" --> "*" JournalAudit
+    RapportConformite "1" --> "*" Facture
+      </div>
+      <div class="doc">
+        <h3>Documentation du diagramme</h3>
+        <ul>
+          <li><strong>Centre du modele:</strong> Facture est l'entite pivot. Toutes les preuves de conformite sont reliees a Facture (lignes, taxes, scellement, transmission, audit, avoir).</li>
+          <li><strong>Cardinalites a respecter:</strong> 1 Facture -> n LigneFacture, 1 Facture -> n TransmissionSecef, 1 Facture -> n JournalAudit, 1 Facture -> 0..n Avoir.</li>
+          <li><strong>Numerotation:</strong> SerieFacture.prochainNumero est la source unique de la sequence. Le numero ne doit jamais etre recycle.</li>
+          <li><strong>Integrite cryptographique:</strong> ScellementNumerique est 0..1 sur Facture, car une facture certifiee porte un scellement unique pour une version donnee.</li>
+          <li><strong>Traçabilite fiscale:</strong> TransmissionSecef conserve format, hash, code retour, message et compteur de retries pour reconstituer l'historique exact.</li>
+        </ul>
+        <table>
+          <thead>
+            <tr><th>Classe</th><th>Role exact</th><th>Champs critiques</th><th>Contrainte de conformite</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Facture</td><td>Document fiscal principal</td><td>numero, dateEmission, totalTtc, codeAuthentification</td><td>Immuable apres certification</td></tr>
+            <tr><td>LigneFacture</td><td>Detail de calcul</td><td>quantite, prixUnitaireHt, montantTva</td><td>Somme lignes = totaux facture</td></tr>
+            <tr><td>ResumeTaxeFacture</td><td>Synthese TVA par taux</td><td>tauxTva, baseTaxable, montantTva</td><td>Doit correspondre aux lignes</td></tr>
+            <tr><td>JournalAudit</td><td>Trace inviolable</td><td>action, entiteId, oldHash, newHash</td><td>Append-only, horodatage fiable</td></tr>
+            <tr><td>TransmissionSecef</td><td>Echanges DGI</td><td>payloadHash, statut, codeRetour, retryCount</td><td>Aucune tentative perdue</td></tr>
+            <tr><td>Avoir</td><td>Regularisation legale</td><td>numero, motif, dateEmission</td><td>Annule sans supprimer la facture</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3) Diagramme de sequence</h2>
+      <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor U as Utilisateur
+    participant FE as Frontend Vue.js
+    participant API as Backend Spring Boot
+    participant DB as PostgreSQL
+    participant SEC as DGI SECeF
+
+    U->>FE: Saisir facture
+    FE->>API: POST /factures
+    API->>DB: Verifications + calculs + numerotation
+    API->>DB: Enregistrer facture + audit
+    API->>SEC: Envoyer payload FEC
+    SEC-->>API: ACK acceptee/rejetee
+    API->>DB: MAJ statut transmission
+    API-->>FE: Retour numero + statut
+    FE-->>U: Affichage facture
+      </div>
+      <div class="doc">
+        <h3>Documentation du diagramme</h3>
+        <ul>
+          <li><strong>Chronologie exacte:</strong> U->FE saisie, FE->API creation, API->DB validations et numerotation, API->SEC transmission, SEC->API ACK, API->DB mise a jour, API->FE resultat.</li>
+          <li><strong>Point de controle critique:</strong> l'enregistrement facture + audit est fait avant l'envoi SECeF pour garantir la preuve locale meme en cas de panne reseau.</li>
+          <li><strong>ACK traite:</strong> le retour SECeF doit mettre a jour le statut de transmission et le statut metier de la facture.</li>
+          <li><strong>Idempotence:</strong> la reprise d'envoi doit reutiliser les identifiants de facture sans creer de doublon fonctionnel.</li>
+          <li><strong>Sortie front:</strong> le frontend affiche au minimum numero facture, statut transmission et message retour en cas de rejet.</li>
+        </ul>
+        <table>
+          <thead>
+            <tr><th>Message</th><th>Entrant</th><th>Sortant</th><th>Effet</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>POST /factures</td><td>Frontend</td><td>Backend</td><td>Demarre la creation et certification</td></tr>
+            <tr><td>Verification + calculs</td><td>Backend</td><td>DB</td><td>Valide coherence metier et sequence</td></tr>
+            <tr><td>Envoyer payload FEC</td><td>Backend</td><td>SECeF</td><td>Transmission fiscale officielle</td></tr>
+            <tr><td>ACK acceptee/rejetee</td><td>SECeF</td><td>Backend</td><td>Fixe le statut fiscal</td></tr>
+            <tr><td>Retour numero + statut</td><td>Backend</td><td>Frontend</td><td>Feedback utilisateur immediat</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>4) Diagramme de flux</h2>
+      <div class="mermaid">
+flowchart TD
+  A[Creer facture] --> B[Valider donnees]
+  B --> C[Calculer HT TVA TTC]
+  C --> D[Generer numero sequentiel]
+  D --> E[Generer code auth]
+  E --> F[Generer QR]
+  F --> G[Certifier / sceller]
+  G --> H[Enregistrer + audit]
+  H --> I[Transmettre au SECeF]
+  I --> J{ACK recu ?}
+  J -- Non --> K[Retry]
+  K --> I
+  J -- Oui --> L{Statut}
+  L -- Accepte --> M[Archiver]
+  L -- Rejete --> N[Corriger + retransmettre]
+  N --> I
+      </div>
+      <div class="doc">
+        <h3>Documentation du diagramme</h3>
+        <ul>
+          <li><strong>Etapes obligatoires:</strong> B, C, D, E, F, G et H sont sequentielles et non sautables pour respecter la conformite.</li>
+          <li><strong>Noeud J ACK recu?:</strong> condition purement technique (transport et disponibilite plateforme).</li>
+          <li><strong>Noeud L Statut:</strong> condition fonctionnelle retour DGI (accepte vs rejete).</li>
+          <li><strong>Branche retry K:</strong> ne modifie pas le contenu facture, elle rejoue uniquement la transmission.</li>
+          <li><strong>Branche correction N:</strong> modifie les donnees metier, puis necessite une nouvelle certification avant envoi.</li>
+        </ul>
+        <table>
+          <thead>
+            <tr><th>Noeud</th><th>Nature</th><th>Entree</th><th>Sortie</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>D Generer numero</td><td>Conformite</td><td>Serie active</td><td>Numero unique</td></tr>
+            <tr><td>G Certifier/sceller</td><td>Conformite</td><td>Donnees facture finalisees</td><td>Facture gelee + signature</td></tr>
+            <tr><td>I Transmettre</td><td>Integration</td><td>Payload DGI</td><td>Tentative de livraison</td></tr>
+            <tr><td>K Retry</td><td>Resilience</td><td>Echec ACK</td><td>Nouvelle tentative</td></tr>
+            <tr><td>N Corriger</td><td>Metier</td><td>Motif rejet DGI</td><td>Payload corrige</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>5) Diagramme d'etats</h2>
+      <div class="mermaid">
+stateDiagram-v2
+  [*] --> BROUILLON
+  BROUILLON --> CERTIFIEE: Validation + scellement
+  CERTIFIEE --> ENVOYEE: Transmission SECeF
+  ENVOYEE --> ACCEPTEE: ACK accepte
+  ENVOYEE --> REJETEE: ACK rejete
+  REJETEE --> CERTIFIEE: Correction + recertification
+  ACCEPTEE --> ANNULEE: Avoir
+      </div>
+      <div class="doc">
+        <h3>Documentation du diagramme</h3>
+        <ul>
+          <li><strong>BROUILLON -> CERTIFIEE:</strong> transition autorisee uniquement si validations metier et fiscales sont conformes.</li>
+          <li><strong>CERTIFIEE -> ENVOYEE:</strong> transition creee au moment de l'envoi SECeF, avec trace de tentative.</li>
+          <li><strong>ENVOYEE -> ACCEPTEE:</strong> ACK positif DGI, facture fiscalement validee.</li>
+          <li><strong>ENVOYEE -> REJETEE:</strong> ACK negatif DGI avec motif obligatoire.</li>
+          <li><strong>REJETEE -> CERTIFIEE:</strong> possible seulement apres correction metier et recertification complete.</li>
+          <li><strong>ACCEPTEE -> ANNULEE:</strong> uniquement via avoir; la facture initiale reste archivee.</li>
+        </ul>
+        <table>
+          <thead>
+            <tr><th>Etat</th><th>Edition autorisee</th><th>Transmission autorisee</th><th>Condition de sortie</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>BROUILLON</td><td>Oui</td><td>Non</td><td>Certification valide</td></tr>
+            <tr><td>CERTIFIEE</td><td>Non</td><td>Oui</td><td>Demarrage envoi</td></tr>
+            <tr><td>ENVOYEE</td><td>Non</td><td>Retry technique</td><td>ACK DGI</td></tr>
+            <tr><td>REJETEE</td><td>Correction controlee</td><td>Oui apres recertification</td><td>Nouvelle certification</td></tr>
+            <tr><td>ACCEPTEE</td><td>Non</td><td>Non (terminee)</td><td>Avoir si annulation</td></tr>
+            <tr><td>ANNULEE</td><td>Non</td><td>Non</td><td>Etat final</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>6) Diagramme de composants</h2>
+      <div class="mermaid">
+flowchart LR
+  UI[Frontend Vue.js] --> API[Backend Spring Boot]
+  API --> FACTURE[Module Facturation]
+  API --> CONFORMITE[Module Conformite]
+  API --> TRANSMISSION[Module Transmission SECeF]
+  API --> REPORTING[Module Reporting]
+  FACTURE --> DB[(PostgreSQL)]
+  CONFORMITE --> DB
+  TRANSMISSION --> DB
+  TRANSMISSION --> SECEF[(API DGI SECeF)]
+      </div>
+      <div class="doc">
+        <h3>Documentation du diagramme</h3>
+        <ul>
+          <li><strong>Frontend Vue.js:</strong> collecte les donnees et ne calcule pas la conformite fiscale finale.</li>
+          <li><strong>Module Facturation:</strong> cree facture et lignes, calcule bases HT/TVA/TTC.</li>
+          <li><strong>Module Conformite:</strong> applique numerotation, code auth, QR, scellement et audit.</li>
+          <li><strong>Module Transmission:</strong> transforme en payload DGI, envoie, recoit ACK, gere retries.</li>
+          <li><strong>Module Reporting:</strong> produit rapports periodiques pour controle fiscal.</li>
+        </ul>
+        <table>
+          <thead>
+            <tr><th>Composant</th><th>Entrees</th><th>Sorties</th><th>Dependance</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Facturation</td><td>Client, produits, lignes</td><td>Facture calculee</td><td>PostgreSQL</td></tr>
+            <tr><td>Conformite</td><td>Facture calculee</td><td>Facture certifiee + audit</td><td>PostgreSQL</td></tr>
+            <tr><td>Transmission</td><td>Facture certifiee</td><td>Statut ACK/REJET</td><td>SECeF + PostgreSQL</td></tr>
+            <tr><td>Reporting</td><td>Donnees facture/audit</td><td>Rapport conformite</td><td>PostgreSQL</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>7) Diagramme de packages</h2>
+      <div class="mermaid">
+flowchart TB
+  C1[api.controller] --> C2[application.service]
+  C2 --> C3[domain.model]
+  C2 --> C4[domain.repository]
+  C4 --> C5[infrastructure.persistence]
+  C2 --> C6[infrastructure.secef]
+  C1 --> C7[infrastructure.security]
+  C2 --> C8[infrastructure.audit]
+  C2 --> C9[shared]
+      </div>
+      <div class="doc">
+        <h3>Documentation du diagramme</h3>
+        <ul>
+          <li><strong>api.controller:</strong> convertit HTTP en commandes applicatives, sans logique metier.</li>
+          <li><strong>application.service:</strong> orchestre les cas d'usage (creer facture, certifier, transmettre, corriger).</li>
+          <li><strong>domain.model:</strong> contient entites, enums et invariants.</li>
+          <li><strong>domain.repository:</strong> contrats abstraits, utilises par les services.</li>
+          <li><strong>infrastructure.*:</strong> implementations techniques (JPA, SECeF, securite, audit).</li>
+        </ul>
+        <table>
+          <thead>
+            <tr><th>Regle d'architecture</th><th>Application concrete</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Controller sans metier</td><td>Pas de calcul TVA ni numerotation dans les endpoints</td></tr>
+            <tr><td>Domaine independant</td><td>Aucune annotation ou dependance SECeF dans domain.model</td></tr>
+            <tr><td>Infrastructure interchangeable</td><td>Le connecteur SECeF peut changer sans casser les services metier</td></tr>
+            <tr><td>Audit transverse</td><td>Evenements critiques journalises via infrastructure.audit</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>8) Diagramme de deploiement</h2>
+      <div class="mermaid">
+flowchart LR
+  BROWSER[Navigateur] --> LB[Reverse Proxy]
+  LB --> WEB[Frontend Vue.js Nginx]
+  LB --> API1[Spring Boot API 1]
+  LB --> API2[Spring Boot API 2]
+  API1 --> PG[(PostgreSQL)]
+  API2 --> PG
+  API1 --> WORKER[Worker Retry]
+  API2 --> WORKER
+  WORKER --> SECEF[(SECeF DGI)]
+      </div>
+      <div class="doc">
+        <h3>Documentation du diagramme</h3>
+        <ul>
+          <li><strong>Trajet utilisateur:</strong> Navigateur -> Reverse Proxy -> Frontend/API.</li>
+          <li><strong>Scalabilite API:</strong> API1 et API2 servent les memes endpoints et la meme base PostgreSQL.</li>
+          <li><strong>Traitements differes:</strong> Worker execute retries et envois asynchrones vers SECeF.</li>
+          <li><strong>Couplage minimal:</strong> le frontend ne contacte jamais directement la DGI.</li>
+          <li><strong>Securite reseau:</strong> chiffrement TLS, filtrage au proxy, journalisation des appels sortants SECeF.</li>
+        </ul>
+        <table>
+          <thead>
+            <tr><th>Noeud</th><th>Role precis</th><th>Disponibilite attendue</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Reverse Proxy</td><td>Routage, point d'entree unique, terminaison TLS</td><td>Haute</td></tr>
+            <tr><td>API1/API2</td><td>Execution metier et conformite</td><td>Haute</td></tr>
+            <tr><td>PostgreSQL</td><td>Source de verite des factures/audits</td><td>Tres haute</td></tr>
+            <tr><td>Worker</td><td>Retry et synchronisation DGI</td><td>Haute</td></tr>
+            <tr><td>SECeF</td><td>Validation fiscale externe</td><td>Variable (geree par retry)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

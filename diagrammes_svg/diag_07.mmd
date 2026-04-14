@@ -1,0 +1,9 @@
+﻿flowchart TB
+  C1[api.controller] --> C2[application.service]
+  C2 --> C3[domain.model]
+  C2 --> C4[domain.repository]
+  C4 --> C5[infrastructure.persistence]
+  C2 --> C6[infrastructure.secef]
+  C1 --> C7[infrastructure.security]
+  C2 --> C8[infrastructure.audit]
+  C2 --> C9[shared]

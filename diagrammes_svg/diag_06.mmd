@@ -1,0 +1,10 @@
+﻿flowchart LR
+  UI[Frontend Vue.js] --> API[Backend Spring Boot]
+  API --> FACTURE[Module Facturation]
+  API --> CONFORMITE[Module Conformite]
+  API --> TRANSMISSION[Module Transmission SECeF]
+  API --> REPORTING[Module Reporting]
+  FACTURE --> DB[(PostgreSQL)]
+  CONFORMITE --> DB
+  TRANSMISSION --> DB
+  TRANSMISSION --> SECEF[(API DGI SECeF)]

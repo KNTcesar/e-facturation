@@ -1,0 +1,61 @@
+﻿flowchart LR
+  %% Acteurs (gauche)
+  subgraph ACTL[Acteurs internes]
+    direction TB
+    ADM[Administrateur]
+    CPT[Comptable]
+    CAI[Caissier]
+    AUD[Auditeur fiscal]
+  end
+
+  %% Systeme (centre)
+  subgraph SYS[Systeme de Facturation d'Entreprise - FEC]
+    direction TB
+    UC1((Se connecter))
+    UC2((Administrer parametres et utilisateurs))
+    UC3((Gerer referentiel clients et produits))
+    UC4((Emettre facture certifiee))
+    UC5((Transmettre et suivre statut SECeF))
+    UC6((Corriger rejet et retransmettre))
+    UC7((Annuler par avoir))
+    UC8((Consulter archives et journal d'audit))
+    UC9((Generer rapport de conformite))
+    UC10((Verifier authenticite via QR))
+  end
+
+  %% Acteurs (droite)
+  subgraph ACTR[Acteurs externes]
+    direction TB
+    CLI[Client]
+    DGI[DGI / SECeF]
+  end
+
+  %% Liens lisibles (minimum)
+  ADM --> UC1
+  ADM --> UC2
+  ADM --> UC9
+
+  CPT --> UC1
+  CPT --> UC3
+  CPT --> UC4
+  CPT --> UC5
+  CPT --> UC6
+  CPT --> UC7
+  CPT --> UC8
+
+  CAI --> UC1
+  CAI --> UC4
+  CAI --> UC8
+
+  AUD --> UC8
+  AUD --> UC9
+
+  DGI --> UC5
+  DGI --> UC6
+  CLI --> UC10
+
+  %% Dependances principales uniquement
+  UC4 -. produit .-> UC5
+  UC5 -. en cas rejet .-> UC6
+  UC4 -. trace .-> UC8
+  UC7 -. trace .-> UC8

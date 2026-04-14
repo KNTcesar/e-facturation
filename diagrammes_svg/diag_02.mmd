@@ -1,0 +1,35 @@
+﻿classDiagram
+    direction LR
+    class Entreprise
+    class Utilisateur
+    class Role
+    class Client
+    class Produit
+    class SerieFacture
+    class Facture
+    class LigneFacture
+    class ResumeTaxeFacture
+    class Avoir
+    class ScellementNumerique
+    class JournalAudit
+    class TransmissionSecef
+    class RapportConformite
+    class PieceJointe
+
+    Entreprise "1" --> "*" Utilisateur
+    Utilisateur "*" --> "*" Role
+    Entreprise "1" --> "*" Client
+    Entreprise "1" --> "*" Produit
+    Entreprise "1" --> "*" SerieFacture
+    Entreprise "1" --> "*" Facture
+    Client "1" --> "*" Facture
+    SerieFacture "1" --> "*" Facture
+    Facture "1" --> "*" LigneFacture
+    Facture "1" --> "*" ResumeTaxeFacture
+    Facture "1" --> "0..1" ScellementNumerique
+    Facture "1" --> "*" TransmissionSecef
+    Facture "1" --> "*" PieceJointe
+    Facture "1" --> "0..*" Avoir
+    Utilisateur "1" --> "*" JournalAudit
+    Facture "1" --> "*" JournalAudit
+    RapportConformite "1" --> "*" Facture

@@ -1,0 +1,17 @@
+﻿sequenceDiagram
+    autonumber
+    actor U as Utilisateur
+    participant FE as Frontend Vue.js
+    participant API as Backend Spring Boot
+    participant DB as PostgreSQL
+    participant SEC as DGI SECeF
+
+    U->>FE: Saisir facture
+    FE->>API: POST /factures
+    API->>DB: Verifications + calculs + numerotation
+    API->>DB: Enregistrer facture + audit
+    API->>SEC: Envoyer payload FEC
+    SEC-->>API: ACK acceptee/rejetee
+    API->>DB: MAJ statut transmission
+    API-->>FE: Retour numero + statut
+    FE-->>U: Affichage facture

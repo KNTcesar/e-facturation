@@ -1,0 +1,10 @@
+﻿flowchart LR
+  BROWSER[Navigateur] --> LB[Reverse Proxy]
+  LB --> WEB[Frontend Vue.js Nginx]
+  LB --> API1[Spring Boot API 1]
+  LB --> API2[Spring Boot API 2]
+  API1 --> PG[(PostgreSQL)]
+  API2 --> PG
+  API1 --> WORKER[Worker Retry]
+  API2 --> WORKER
+  WORKER --> SECEF[(SECeF DGI)]

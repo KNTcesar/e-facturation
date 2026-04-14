@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: sfe-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/sfe_db}
+    username: ${SPRING_DATASOURCE_USERNAME:sfe_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:sfe_password}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    issuer: sfe-backend
+    expiration-minutes: 120
+    secret: ${APP_JWT_SECRET:CHANGE_ME_WITH_A_LONG_SECURE_256BIT_SECRET_KEY}
+  secef:
+    max-retries: ${APP_SECEF_MAX_RETRIES:3}
+    dispatch-interval-ms: ${APP_SECEF_DISPATCH_INTERVAL_MS:60000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

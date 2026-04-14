@@ -1,0 +1,16 @@
+﻿flowchart TD
+  A[Creer facture] --> B[Valider donnees]
+  B --> C[Calculer HT TVA TTC]
+  C --> D[Generer numero sequentiel]
+  D --> E[Generer code auth]
+  E --> F[Generer QR]
+  F --> G[Certifier / sceller]
+  G --> H[Enregistrer + audit]
+  H --> I[Transmettre au SECeF]
+  I --> J{ACK recu ?}
+  J -- Non --> K[Retry]
+  K --> I
+  J -- Oui --> L{Statut}
+  L -- Accepte --> M[Archiver]
+  L -- Rejete --> N[Corriger + retransmettre]
+  N --> I

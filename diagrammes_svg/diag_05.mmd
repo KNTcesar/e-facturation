@@ -1,0 +1,8 @@
+﻿stateDiagram-v2
+  [*] --> BROUILLON
+  BROUILLON --> CERTIFIEE: Validation + scellement
+  CERTIFIEE --> ENVOYEE: Transmission SECeF
+  ENVOYEE --> ACCEPTEE: ACK accepte
+  ENVOYEE --> REJETEE: ACK rejete
+  REJETEE --> CERTIFIEE: Correction + recertification
+  ACCEPTEE --> ANNULEE: Avoir

@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16
+    container_name: sfe-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sfe_db
+      POSTGRES_USER: sfe_user
+      POSTGRES_PASSWORD: sfe_password
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sfe_user -d sfe_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - sfe_postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    container_name: sfe-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sfe_db
+      SPRING_DATASOURCE_USERNAME: sfe_user
+      SPRING_DATASOURCE_PASSWORD: sfe_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      APP_JWT_SECRET: CHANGE_ME_WITH_A_LONG_SECURE_256BIT_SECRET_KEY
+    ports:
+      - "8080:8080"
+
+volumes:
+  sfe_postgres_data:
