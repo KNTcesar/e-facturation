@@ -13,6 +13,7 @@ public record EntrepriseRequest(
         @NotBlank String ifu,
         @NotBlank String rccm,
         @NotBlank String regimeFiscal,
+        @NotBlank String serviceImpotRattachement,
         @NotBlank String adresse,
         @NotBlank String paysCode,
         @NotBlank String ville,
@@ -22,6 +23,7 @@ public record EntrepriseRequest(
         @NotNull LocalDate dateEffet,
         boolean actif,
         @NotEmpty List<EtablissementRequest> etablissements,
-        @NotEmpty List<CertificatFiscalRequest> certificats
+        @NotEmpty List<CertificatFiscalRequest> certificats,
+        @NotEmpty List<CompteBancaireEntrepriseRequest> comptesBancaires
 ) {
 }

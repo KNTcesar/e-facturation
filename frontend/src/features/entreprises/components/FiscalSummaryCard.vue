@@ -23,6 +23,15 @@
         </v-col>
       </v-row>
 
+      <v-row dense v-if="entrepriseStore.activeEntreprise" class="mt-1">
+        <v-col cols="12">
+          <div class="fiscal-info">
+            <div class="label">Service impôts</div>
+            <div class="value">{{ entrepriseStore.activeEntreprise.serviceImpotRattachement }}</div>
+          </div>
+        </v-col>
+      </v-row>
+
       <v-row dense v-if="entrepriseStore.activeEntreprise" class="mt-2">
         <v-col cols="6" sm="3">
           <v-chip
@@ -41,6 +50,11 @@
         <v-col cols="6" sm="3">
           <v-chip size="small" variant="tonal" color="warning">
             Cert: {{ entrepriseStore.activeEntreprise.certificats.length }}
+          </v-chip>
+        </v-col>
+        <v-col cols="6" sm="3">
+          <v-chip size="small" variant="tonal" color="primary">
+            Banques: {{ entrepriseStore.activeEntreprise.comptesBancaires.length }}
           </v-chip>
         </v-col>
         <v-col cols="6" sm="3" class="text-right">

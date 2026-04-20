@@ -3,20 +3,24 @@ import { http } from '@/shared/api/http'
 // Modèle client exposé par l'API.
 export type ClientResponse = {
   id: string
+  typeClient: 'CC' | 'PM' | 'PP' | 'PC'
   nom: string
-  ifu: string
+  ifu: string | null
+  rccm: string | null
   adresse: string
-  telephone: string
-  email: string
+  telephone: string | null
+  email: string | null
 }
 
 // Payload minimal pour créer un client.
 export type ClientCreateRequest = {
+  typeClient: 'CC' | 'PM' | 'PP' | 'PC'
   nom: string
-  ifu: string
+  ifu?: string
+  rccm?: string
   adresse: string
-  telephone: string
-  email: string
+  telephone?: string
+  email?: string
 }
 
 // Liste des clients disponibles pour la facturation.

@@ -19,15 +19,18 @@ public class LigneFactureService {
     private final LigneFactureRepository ligneFactureRepository;
 
     @Transactional(readOnly = true)
+    // Liste les lignes associees a une facture donnee.
     public List<LigneFactureResponse> listByFacture(UUID factureId) {
         return ligneFactureRepository.findByFactureId(factureId).stream().map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
+    // Retourne une ligne de facture par identifiant.
     public LigneFactureResponse get(UUID id) {
         return toResponse(ligneFactureRepository.findById(Objects.requireNonNull(id, "id is required")).orElseThrow(() -> new IllegalArgumentException("Ligne facture introuvable")));
     }
 
+    // Convertit une entite ligne de facture en DTO de consultation.
     private LigneFactureResponse toResponse(LigneFacture ligne) {
         return new LigneFactureResponse(
                 ligne.getId(),

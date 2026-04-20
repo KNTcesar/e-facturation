@@ -10,6 +10,7 @@ public record TransmissionSecefResponse(
         UUID factureId,
         String formatPayload,
         String payloadHash,
+        String payloadData,
         StatutTransmission statut,
         String codeRetour,
         String messageRetour,

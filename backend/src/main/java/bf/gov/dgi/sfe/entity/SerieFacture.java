@@ -15,15 +15,19 @@ import lombok.Setter;
 // Source de numerotation des factures par serie.
 public class SerieFacture extends BaseAuditableEntity {
 
+    // Code de serie visible sur les factures.
     @Column(nullable = false)
     private String code;
 
+    // Exercice fiscal de la serie.
     @Column(nullable = false)
     private int exercice;
 
+    // Prochain numero a attribuer.
     @Column(nullable = false)
     private long prochainNumero;
 
+    // Indique si la serie est exploitable.
     @Column(nullable = false)
     private boolean active;
 }

@@ -26,6 +26,7 @@ public class SignatureFactureService {
      * Signe une facture avec un certificat et une signature numerique fournis
      */
     @Transactional
+    // Signe une facture et conserve la preuve de signature.
     public SignatureFactureResponse signer(UUID factureId, SignerFactureRequest request) {
         Facture facture = factureRepository.findById(factureId)
                 .orElseThrow(() -> new IllegalArgumentException("Facture non trouvee: " + factureId));
@@ -53,6 +54,7 @@ public class SignatureFactureService {
      * Recupere la signature d'une facture
      */
     @Transactional(readOnly = true)
+    // Recupere les informations de signature d'une facture.
     public SignatureFactureResponse getSignature(UUID factureId) {
         SignatureFacture signature = signatureRepository.findByFactureId(factureId)
                 .orElseThrow(() -> new IllegalArgumentException("Signature non trouvee pour facture: " + factureId));
@@ -62,6 +64,7 @@ public class SignatureFactureService {
     /**
      * Verifie que la facture est signee
      */
+    // Indique si une facture a deja une signature enregistree.
     boolean isSignee(UUID factureId) {
         return signatureRepository.findByFactureId(factureId).isPresent();
     }
@@ -69,6 +72,7 @@ public class SignatureFactureService {
     /**
      * Calcule le hash SHA-256 de la facture pour signature
      */
+    // Calcule l'empreinte du contenu facture a signer.
     private String computeFactureHash(Facture facture) {
         try {
             String data = facture.getNumero() + "|" + facture.getDateEmission() + "|" + facture.getTotalTtc();
@@ -83,6 +87,7 @@ public class SignatureFactureService {
     /**
      * Calcule le fingerprint du certificat (SHA-256 du cert en base64)
      */
+    // Calcule l'empreinte du certificat pour verification ulterieure.
     private String computeCertificatFingerprint(String certificatBase64) {
         try {
                MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -93,6 +98,7 @@ public class SignatureFactureService {
         }
     }
 
+    // Convertit l'entite signature en DTO de sortie.
     private SignatureFactureResponse mapToResponse(SignatureFacture signature) {
         return new SignatureFactureResponse(
                 signature.getId(),

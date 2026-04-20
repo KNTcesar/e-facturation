@@ -27,11 +27,13 @@ public class RoleController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
+    // Cree un role applicatif et ses permissions associees.
     public ResponseEntity<RoleResponse> create(@Valid @RequestBody RoleRequest request) {
         return ResponseEntity.ok(roleService.create(request));
     }
 
     @GetMapping
+    // Liste les roles disponibles.
     public ResponseEntity<List<RoleResponse>> list() {
         return ResponseEntity.ok(roleService.list());
     }

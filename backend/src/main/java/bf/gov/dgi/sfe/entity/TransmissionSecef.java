@@ -28,28 +28,40 @@ public class TransmissionSecef extends BaseAuditableEntity {
     @JoinColumn(name = "facture_id", nullable = false)
     private Facture facture;
 
+    // Format technique de la charge utile (JSON/XML).
     @Column(nullable = false)
     private String formatPayload;
 
+    // Empreinte d'integrite du payload.
     @Column(nullable = false)
     private String payloadHash;
 
+    // Charge utile effectivement transmise au MCF/SECeF.
+    @Column(columnDefinition = "TEXT")
+    private String payloadData;
+
+    // Statut courant du cycle de transmission.
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatutTransmission statut;
 
+    // Code retour fourni par le SECeF.
     @Column
     private String codeRetour;
 
+    // Message retour fourni par le SECeF.
     @Column
     private String messageRetour;
 
+    // Date/heure d'envoi effectif.
     @Column(nullable = false)
     private OffsetDateTime dateEnvoi;
 
+    // Date/heure d'accuse ou confirmation.
     @Column
     private OffsetDateTime dateAccuse;
 
+    // Nombre de tentatives d'envoi effectuees.
     @Column(nullable = false)
     private int retryCount;
 }

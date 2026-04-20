@@ -20,22 +20,32 @@ import java.time.LocalDate;
 // Certificat fiscal utilise pour signer et authentifier les emissions.
 public class CertificatFiscal extends BaseAuditableEntity {
 
+    // Entreprise proprietaire du certificat fiscal.
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "entreprise_id", nullable = false)
     private Entreprise entreprise;
 
+    // Numero de serie unique du certificat.
     @Column(nullable = false, unique = true)
     private String numeroSerie;
 
+    // ISF attribue par l'administration pour le modele SFE approuve.
+    @Column(nullable = false, unique = true)
+    private String numeroIsf;
+
+    // Autorite ayant emis le certificat.
     @Column(nullable = false)
     private String autoriteEmission;
 
+    // Date de debut de validite du certificat.
     @Column(nullable = false)
     private LocalDate dateDebutValidite;
 
+    // Date de fin de validite du certificat.
     @Column(nullable = false)
     private LocalDate dateFinValidite;
 
+    // Etat d'activation du certificat.
     @Column(nullable = false)
     private boolean actif;
 }

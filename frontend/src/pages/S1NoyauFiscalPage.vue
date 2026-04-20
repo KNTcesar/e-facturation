@@ -55,6 +55,14 @@
               <v-text-field v-model="form.regimeFiscal" label="Régime fiscal" variant="outlined" required />
             </v-col>
             <v-col cols="12" md="4">
+              <v-text-field
+                v-model="form.serviceImpotRattachement"
+                label="Service des impôts de rattachement"
+                variant="outlined"
+                required
+              />
+            </v-col>
+            <v-col cols="12" md="4">
               <v-text-field v-model="form.paysCode" label="Pays (code)" variant="outlined" required />
             </v-col>
             <v-col cols="12" md="4">
@@ -99,6 +107,26 @@
           </v-row>
 
           <v-divider class="my-3" />
+          <h4 class="mb-2">Compte bancaire de référence</h4>
+          <v-row dense>
+            <v-col cols="12" md="6">
+              <v-text-field
+                v-model="form.compteBancaire.referenceCompte"
+                label="Référence compte (RIB/IBAN/Numéro)"
+                variant="outlined"
+                required
+              />
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                v-model="form.compteBancaire.banque"
+                label="Banque (optionnel)"
+                variant="outlined"
+              />
+            </v-col>
+          </v-row>
+
+          <v-divider class="my-3" />
           <h4 class="mb-2">Établissement principal</h4>
           <v-row dense>
             <v-col cols="12" md="3">
@@ -122,12 +150,15 @@
               <v-text-field v-model="form.certificat.numeroSerie" label="N° série" variant="outlined" required />
             </v-col>
             <v-col cols="12" md="4">
+              <v-text-field v-model="form.certificat.numeroIsf" label="N° ISF" variant="outlined" required />
+            </v-col>
+            <v-col cols="12" md="4">
               <v-text-field v-model="form.certificat.autoriteEmission" label="Autorité émission" variant="outlined" required />
             </v-col>
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="6">
               <v-text-field v-model="form.certificat.dateDebutValidite" label="Début validité" type="date" variant="outlined" required />
             </v-col>
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="6">
               <v-text-field v-model="form.certificat.dateFinValidite" label="Fin validité" type="date" variant="outlined" required />
             </v-col>
           </v-row>
@@ -212,6 +243,7 @@ const form = reactive({
   ifu: '',
   rccm: '',
   regimeFiscal: '',
+  serviceImpotRattachement: '',
   adresse: '',
   paysCode: 'BF',
   ville: '',
@@ -219,6 +251,10 @@ const form = reactive({
   email: '',
   logoUrl: '',
   dateEffet: new Date().toISOString().slice(0, 10),
+  compteBancaire: {
+    referenceCompte: '',
+    banque: '',
+  },
   etablissement: {
     code: 'HQ',
     nom: 'Siège',
@@ -227,6 +263,7 @@ const form = reactive({
   },
   certificat: {
     numeroSerie: '',
+    numeroIsf: '',
     autoriteEmission: 'DGI',
     dateDebutValidite: new Date().toISOString().slice(0, 10),
     dateFinValidite: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().slice(0, 10),
@@ -242,6 +279,7 @@ async function onCreateFiscalCore() {
       ifu: form.ifu.trim(),
       rccm: form.rccm.trim(),
       regimeFiscal: form.regimeFiscal.trim(),
+      serviceImpotRattachement: form.serviceImpotRattachement.trim(),
       adresse: form.adresse.trim(),
       paysCode: form.paysCode.trim().toUpperCase(),
       ville: form.ville.trim(),
@@ -263,9 +301,17 @@ async function onCreateFiscalCore() {
       certificats: [
         {
           numeroSerie: form.certificat.numeroSerie.trim(),
+          numeroIsf: form.certificat.numeroIsf.trim(),
           autoriteEmission: form.certificat.autoriteEmission.trim(),
           dateDebutValidite: form.certificat.dateDebutValidite,
           dateFinValidite: form.certificat.dateFinValidite,
+          actif: true,
+        },
+      ],
+      comptesBancaires: [
+        {
+          referenceCompte: form.compteBancaire.referenceCompte.trim(),
+          banque: form.compteBancaire.banque.trim() || null,
           actif: true,
         },
       ],

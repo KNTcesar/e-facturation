@@ -1,10 +1,12 @@
 package bf.gov.dgi.sfe.service;
 
 import bf.gov.dgi.sfe.dto.CertificatFiscalResponse;
+import bf.gov.dgi.sfe.dto.CompteBancaireEntrepriseResponse;
 import bf.gov.dgi.sfe.dto.EtablissementResponse;
 import bf.gov.dgi.sfe.dto.EntrepriseRequest;
 import bf.gov.dgi.sfe.dto.EntrepriseResponse;
 import bf.gov.dgi.sfe.entity.CertificatFiscal;
+import bf.gov.dgi.sfe.entity.CompteBancaireEntreprise;
 import bf.gov.dgi.sfe.entity.Etablissement;
 import bf.gov.dgi.sfe.entity.Entreprise;
 import bf.gov.dgi.sfe.repository.EntrepriseRepository;
@@ -25,6 +27,7 @@ public class EntrepriseService {
     private final EntrepriseRepository entrepriseRepository;
 
     @Transactional
+    // Cree un profil entreprise complet (etablissements, certificats, comptes bancaires).
     public EntrepriseResponse create(EntrepriseRequest request) {
         validateCoreFiscalProfile(request);
 
@@ -37,6 +40,7 @@ public class EntrepriseService {
         entreprise.setIfu(request.ifu());
         entreprise.setRccm(request.rccm());
         entreprise.setRegimeFiscal(request.regimeFiscal());
+        entreprise.setServiceImpotRattachement(request.serviceImpotRattachement().trim());
         entreprise.setAdresse(request.adresse());
         entreprise.setPaysCode(request.paysCode().toUpperCase());
         entreprise.setVille(request.ville());
@@ -62,6 +66,7 @@ public class EntrepriseService {
             CertificatFiscal certificat = new CertificatFiscal();
             certificat.setEntreprise(entreprise);
             certificat.setNumeroSerie(item.numeroSerie());
+            certificat.setNumeroIsf(item.numeroIsf());
             certificat.setAutoriteEmission(item.autoriteEmission());
             certificat.setDateDebutValidite(item.dateDebutValidite());
             certificat.setDateFinValidite(item.dateFinValidite());
@@ -69,11 +74,21 @@ public class EntrepriseService {
             entreprise.getCertificats().add(certificat);
         });
 
+        request.comptesBancaires().forEach(item -> {
+            CompteBancaireEntreprise compte = new CompteBancaireEntreprise();
+            compte.setEntreprise(entreprise);
+            compte.setReferenceCompte(item.referenceCompte().trim());
+            compte.setBanque(trimToNull(item.banque()));
+            compte.setActif(item.actif());
+            entreprise.getComptesBancaires().add(compte);
+        });
+
         Entreprise saved = entrepriseRepository.save(entreprise);
         return toResponse(saved);
     }
 
     @Transactional
+    // Met a jour uniquement le logo de l'entreprise cible.
     public EntrepriseResponse updateLogo(UUID id, String logoUrl) {
         Entreprise entreprise = entrepriseRepository.findById(Objects.requireNonNull(id, "id is required"))
                 .orElseThrow(() -> new IllegalArgumentException("Entreprise introuvable"));
@@ -84,16 +99,20 @@ public class EntrepriseService {
         Entreprise saved = entrepriseRepository.save(entreprise);
         return toResponse(saved);
     }
+
+    // Liste tous les profils entreprise.
     public List<EntrepriseResponse> list() {
         return entrepriseRepository.findAll().stream().map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
+    // Retourne un profil entreprise par identifiant.
     public EntrepriseResponse get(UUID id) {
         return toResponse(entrepriseRepository.findById(Objects.requireNonNull(id, "id is required")).orElseThrow(() -> new IllegalArgumentException("Entreprise introuvable")));
     }
 
     @Transactional(readOnly = true)
+    // Retourne le profil entreprise actuellement actif.
     public EntrepriseResponse getActive() {
         Entreprise entreprise = entrepriseRepository.findFirstByActifTrueOrderByDateEffetDesc()
                 .orElseThrow(() -> new IllegalArgumentException("Aucune entreprise fiscale active"));
@@ -101,6 +120,7 @@ public class EntrepriseService {
     }
 
     @Transactional(readOnly = true)
+    // Verifie la disponibilite de l'identite fiscale active avant emission.
     public void assertFiscalIdentityReady() {
         Entreprise active = entrepriseRepository.findFirstByActifTrueOrderByDateEffetDesc()
                 .orElseThrow(() -> new IllegalArgumentException("Profil fiscal actif manquant"));
@@ -120,6 +140,7 @@ public class EntrepriseService {
         }
     }
 
+    // Convertit l'entite entreprise en DTO complet de reponse.
     private EntrepriseResponse toResponse(Entreprise e) {
         List<EtablissementResponse> etablissements = e.getEtablissements().stream()
                 .map(etab -> new EtablissementResponse(
@@ -137,6 +158,7 @@ public class EntrepriseService {
                 .map(cert -> new CertificatFiscalResponse(
                         cert.getId(),
                         cert.getNumeroSerie(),
+                cert.getNumeroIsf(),
                         cert.getAutoriteEmission(),
                         cert.getDateDebutValidite(),
                         cert.getDateFinValidite(),
@@ -144,12 +166,22 @@ public class EntrepriseService {
                 ))
                 .toList();
 
+        List<CompteBancaireEntrepriseResponse> comptesBancaires = e.getComptesBancaires().stream()
+            .map(compte -> new CompteBancaireEntrepriseResponse(
+                compte.getId(),
+                compte.getReferenceCompte(),
+                compte.getBanque(),
+                compte.isActif()
+            ))
+            .toList();
+
         return new EntrepriseResponse(
                 e.getId(),
                 e.getNom(),
                 e.getIfu(),
                 e.getRccm(),
                 e.getRegimeFiscal(),
+                e.getServiceImpotRattachement(),
                 e.getAdresse(),
                 e.getPaysCode(),
                 e.getVille(),
@@ -159,10 +191,12 @@ public class EntrepriseService {
                 e.getDateEffet(),
                 e.isActif(),
                 etablissements,
-                certificats
+                certificats,
+                comptesBancaires
         );
     }
 
+    // Applique les validations metier obligatoires du profil fiscal.
     private void validateCoreFiscalProfile(EntrepriseRequest request) {
         boolean hasPrincipalEtablissement = request.etablissements().stream().anyMatch(item -> item.principal() && item.actif());
         if (!hasPrincipalEtablissement) {
@@ -180,8 +214,30 @@ public class EntrepriseService {
         if (invalidWindow) {
             throw new IllegalArgumentException("Periode de validite certificat invalide");
         }
+
+        long distinctIsf = request.certificats().stream()
+                .map(cert -> cert.numeroIsf().trim().toUpperCase())
+                .distinct()
+                .count();
+        if (distinctIsf != request.certificats().size()) {
+            throw new IllegalArgumentException("Les numeros ISF des certificats doivent etre uniques");
+        }
+
+        boolean hasActiveBankAccount = request.comptesBancaires().stream().anyMatch(compte -> compte.actif());
+        if (!hasActiveBankAccount) {
+            throw new IllegalArgumentException("Au moins une reference de compte bancaire active est obligatoire");
+        }
+
+        long distinctBankRefs = request.comptesBancaires().stream()
+                .map(compte -> compte.referenceCompte().trim().toUpperCase())
+                .distinct()
+                .count();
+        if (distinctBankRefs != request.comptesBancaires().size()) {
+            throw new IllegalArgumentException("Les references de comptes bancaires doivent etre uniques");
+        }
     }
 
+    // Nettoie une chaine et retourne null si vide.
     private String trimToNull(String value) {
         if (value == null) {
             return null;

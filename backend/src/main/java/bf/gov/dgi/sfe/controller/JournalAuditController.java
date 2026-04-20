@@ -22,11 +22,13 @@ public class JournalAuditController {
     private final JournalAuditService journalAuditService;
 
     @GetMapping
+    // Liste les enregistrements du journal d'audit.
     public ResponseEntity<List<JournalAuditResponse>> list() {
         return ResponseEntity.ok(journalAuditService.list());
     }
 
     @GetMapping("/verify")
+    // Verifie l'integrite de la chaine de hash du journal d'audit.
     public ResponseEntity<AuditChainVerificationResponse> verify() {
         return ResponseEntity.ok(journalAuditService.verifyChain());
     }

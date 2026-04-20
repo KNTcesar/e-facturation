@@ -20,16 +20,19 @@ public class JournalAuditService {
     private final JournalAuditRepository journalAuditRepository;
 
     @Transactional(readOnly = true)
+    // Liste les entrees du journal d'audit dans l'ordre chronologique chainee.
     public List<JournalAuditResponse> list() {
         return journalAuditRepository.findAllByOrderBySequenceNumberAscCreatedAtAsc().stream().map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
+    // Retourne une entree d'audit par identifiant.
     public JournalAuditResponse get(UUID id) {
         return toResponse(journalAuditRepository.findById(Objects.requireNonNull(id, "id is required")).orElseThrow(() -> new IllegalArgumentException("Audit introuvable")));
     }
 
     @Transactional(readOnly = true)
+    // Verifie la continuite du chainage et la validite des hashes d'audit.
     public AuditChainVerificationResponse verifyChain() {
         List<JournalAudit> entries = journalAuditRepository.findAllByOrderBySequenceNumberAscCreatedAtAsc();
         if (entries.isEmpty()) {
@@ -66,6 +69,7 @@ public class JournalAuditService {
         return new AuditChainVerificationResponse(true, entries.size(), null, "Chainage audit valide");
     }
 
+    // Convertit une entree audit en DTO de consultation.
     private JournalAuditResponse toResponse(JournalAudit audit) {
         return new JournalAuditResponse(
                 audit.getId(),

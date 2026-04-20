@@ -21,6 +21,7 @@ public class SerieFactureService {
     private final SerieFactureRepository serieFactureRepository;
 
     @Transactional
+    // Cree une serie de numerotation pour l'exercice cible.
     public SerieFactureResponse create(SerieFactureRequest request) {
         SerieFacture serie = new SerieFacture();
         serie.setCode(request.code());
@@ -32,15 +33,18 @@ public class SerieFactureService {
     }
 
     @Transactional(readOnly = true)
+    // Liste les series de facturation configurees.
     public List<SerieFactureResponse> list() {
         return serieFactureRepository.findAll().stream().map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
+    // Recupere une serie de facture par identifiant.
     public SerieFactureResponse get(UUID id) {
         return toResponse(serieFactureRepository.findById(Objects.requireNonNull(id, "id is required")).orElseThrow(() -> new IllegalArgumentException("Serie introuvable")));
     }
 
+    // Convertit une entite serie en DTO de reponse.
     private SerieFactureResponse toResponse(SerieFacture serie) {
         return new SerieFactureResponse(serie.getId(), serie.getCode(), serie.getExercice(), serie.getProchainNumero(), serie.isActive());
     }

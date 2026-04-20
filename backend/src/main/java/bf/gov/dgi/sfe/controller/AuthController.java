@@ -20,6 +20,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
+    // Authentifie l'utilisateur et retourne un jeton JWT.
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.authenticate(request));
     }

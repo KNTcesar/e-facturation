@@ -31,11 +31,13 @@ public class UtilisateurController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
+    // Cree un compte utilisateur applicatif.
     public ResponseEntity<UtilisateurResponse> create(@Valid @RequestBody UtilisateurRequest request) {
         return ResponseEntity.ok(utilisateurService.create(request));
     }
 
     @GetMapping
+    // Liste les comptes utilisateurs.
     public ResponseEntity<List<UtilisateurResponse>> list() {
         return ResponseEntity.ok(utilisateurService.list());
     }

@@ -26,6 +26,7 @@ public class HorodatageFactureService {
      * Applique un horodatage a une facture a partir d'une autorite de temps
      */
     @Transactional
+    // Cree un horodatage certifie pour une facture et retourne son resume.
     public HorodatageFactureResponse horodater(UUID factureId, HorodaterFactureRequest request) {
         Facture facture = factureRepository.findById(factureId)
                 .orElseThrow(() -> new IllegalArgumentException("Facture non trouvee: " + factureId));
@@ -53,6 +54,7 @@ public class HorodatageFactureService {
      * Recupere l'horodatage d'une facture
      */
     @Transactional(readOnly = true)
+    // Recupere l'horodatage existant d'une facture.
     public HorodatageFactureResponse getHorodatage(UUID factureId) {
         HorodatageFacture horodatage = horodatageRepository.findByFactureId(factureId)
                 .orElseThrow(() -> new IllegalArgumentException("Horodatage non trouve pour facture: " + factureId));
@@ -62,6 +64,7 @@ public class HorodatageFactureService {
     /**
      * Verifie que la facture est horodatee
      */
+    // Indique si une facture possede deja un horodatage.
     boolean isHorodatee(UUID factureId) {
         return horodatageRepository.findByFactureId(factureId).isPresent();
     }
@@ -69,6 +72,7 @@ public class HorodatageFactureService {
     /**
      * Calcule le hash SHA-256 de la signature/document a horodater
      */
+    // Calcule l'empreinte technique de la facture pour l'horodatage.
     private String computeHashSignature(Facture facture) {
         try {
             // En prod, ce serait le hash de la signature numerique
@@ -81,6 +85,7 @@ public class HorodatageFactureService {
         }
     }
 
+    // Convertit l'entite horodatage en DTO de reponse.
     private HorodatageFactureResponse mapToResponse(HorodatageFacture horodatage) {
         return new HorodatageFactureResponse(
                 horodatage.getId(),

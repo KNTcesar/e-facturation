@@ -20,6 +20,7 @@ public class RoleService {
     private final RoleRepository roleRepository;
 
     @Transactional
+    // Cree un role applicatif.
     public RoleResponse create(RoleRequest request) {
         Role role = new Role();
         role.setCode(request.code());
@@ -29,15 +30,18 @@ public class RoleService {
     }
 
     @Transactional(readOnly = true)
+    // Liste les roles existants.
     public List<RoleResponse> list() {
         return roleRepository.findAll().stream().map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
+    // Recupere un role par identifiant.
     public RoleResponse get(UUID id) {
         return toResponse(roleRepository.findById(Objects.requireNonNull(id, "id is required")).orElseThrow(() -> new IllegalArgumentException("Role introuvable")));
     }
 
+    // Convertit une entite role en DTO de reponse.
     private RoleResponse toResponse(Role role) {
         return new RoleResponse(role.getId(), role.getCode(), role.getLibelle());
     }

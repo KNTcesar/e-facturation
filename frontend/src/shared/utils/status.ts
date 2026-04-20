@@ -6,6 +6,8 @@ type UiStatus = {
 // Conversion des statuts backend vers une étiquette lisible et une couleur UI cohérente.
 export function invoiceStatusUi(status: string): UiStatus {
   switch (status) {
+    case 'BROUILLON':
+      return { label: 'En attente', color: 'warning' }
     case 'CERTIFIEE':
       return { label: 'Certifiee', color: 'secondary' }
     case 'ENVOYEE':
@@ -14,6 +16,8 @@ export function invoiceStatusUi(status: string): UiStatus {
       return { label: 'Acceptee', color: 'success' }
     case 'REJETEE':
       return { label: 'Rejetee', color: 'error' }
+    case 'ANNULEE':
+      return { label: 'Annulee', color: 'error' }
     default:
       return { label: status, color: 'primary' }
   }

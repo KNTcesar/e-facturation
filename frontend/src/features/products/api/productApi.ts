@@ -5,18 +5,29 @@ export type ProductResponse = {
   id: string
   reference: string
   designation: string
+  typeArticle: 'LOCBIE' | 'LOCSER' | 'IMPBIE'
+  modePrixArticle: 'HT' | 'TTC'
   prixUnitaireHt: number
+  prixUnitaireTtc: number
   tauxTva: number
+  groupeTaxation: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P'
+  taxeSpecifiqueUnitaire: number
   unite: string
+  quantite: number
 }
 
 // Données requises pour créer un produit.
 export type ProductCreateRequest = {
   reference: string
   designation: string
-  prixUnitaireHt: number
+  typeArticle: 'LOCBIE' | 'LOCSER' | 'IMPBIE'
+  modePrixArticle: 'HT' | 'TTC'
+  prixUnitaire: number
   tauxTva: number
+  groupeTaxation?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P'
+  taxeSpecifiqueUnitaire?: number
   unite: string
+  quantite: number
 }
 
 // Charge le catalogue produit.

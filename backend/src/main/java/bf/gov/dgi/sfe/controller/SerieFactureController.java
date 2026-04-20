@@ -27,11 +27,13 @@ public class SerieFactureController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
+    // Cree une serie de numerotation de facture pour un exercice donne.
     public ResponseEntity<SerieFactureResponse> create(@Valid @RequestBody SerieFactureRequest request) {
         return ResponseEntity.ok(serieFactureService.create(request));
     }
 
     @GetMapping
+    // Liste les series de facturation configurees.
     public ResponseEntity<List<SerieFactureResponse>> list() {
         return ResponseEntity.ok(serieFactureService.list());
     }

@@ -78,6 +78,10 @@
 
         <div class="row mb-3">
           <div class="col-md-6">
+            <strong>Service impôts:</strong>
+            {{ entrepriseStore.activeEntreprise.serviceImpotRattachement }}
+          </div>
+          <div class="col-md-6">
             <strong>Date d'Effet:</strong>
             {{ formatDate(entrepriseStore.activeEntreprise.dateEffet) }}
           </div>
@@ -188,6 +192,43 @@
         </v-table>
         <div v-else class="text-center text-muted py-4">
           Aucun certificat
+        </div>
+      </v-card-text>
+    </v-card>
+
+    <v-card v-if="entrepriseStore.activeEntreprise" class="mt-4">
+      <v-card-title class="d-flex align-center gap-2">
+        <v-icon icon="mdi-bank" color="primary"></v-icon>
+        Comptes bancaires ({{ entrepriseStore.activeEntreprise.comptesBancaires.length }})
+      </v-card-title>
+
+      <v-card-text class="pt-0">
+        <v-table v-if="entrepriseStore.activeEntreprise.comptesBancaires.length > 0" class="table-sm">
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Banque</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="compte in entrepriseStore.activeEntreprise.comptesBancaires" :key="compte.id">
+              <td><code>{{ compte.referenceCompte }}</code></td>
+              <td>{{ compte.banque || '-' }}</td>
+              <td>
+                <v-chip
+                  :color="compte.actif ? 'success' : 'error'"
+                  size="x-small"
+                  label
+                >
+                  {{ compte.actif ? 'Actif' : 'Inactif' }}
+                </v-chip>
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
+        <div v-else class="text-center text-muted py-4">
+          Aucun compte bancaire
         </div>
       </v-card-text>
     </v-card>

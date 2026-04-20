@@ -7,6 +7,7 @@ import java.util.UUID;
 public record CertificatFiscalResponse(
         UUID id,
         String numeroSerie,
+        String numeroIsf,
         String autoriteEmission,
         LocalDate dateDebutValidite,
         LocalDate dateFinValidite,

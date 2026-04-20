@@ -32,11 +32,13 @@ public class SignatureHorodatageController {
 
     @PreAuthorize("hasAnyRole('ADMIN','COMPTABLE')")
     @PostMapping("/{id}/signer")
+    // Signe fiscalement une facture.
     public ResponseEntity<SignatureFactureResponse> signer(@PathVariable UUID id, @Valid @RequestBody SignerFactureRequest request) {
         return ResponseEntity.ok(signatureService.signer(id, request));
     }
 
     @GetMapping("/{id}/signature")
+    // Retourne les informations de signature d'une facture.
     public ResponseEntity<SignatureFactureResponse> getSignature(@PathVariable UUID id) {
         return ResponseEntity.ok(signatureService.getSignature(id));
     }
@@ -45,11 +47,13 @@ public class SignatureHorodatageController {
 
     @PreAuthorize("hasAnyRole('ADMIN','COMPTABLE')")
     @PostMapping("/{id}/horodater")
+    // Applique un horodatage certifie a une facture.
     public ResponseEntity<HorodatageFactureResponse> horodater(@PathVariable UUID id, @Valid @RequestBody HorodaterFactureRequest request) {
         return ResponseEntity.ok(horodatageService.horodater(id, request));
     }
 
     @GetMapping("/{id}/horodatage")
+    // Retourne les informations d'horodatage d'une facture.
     public ResponseEntity<HorodatageFactureResponse> getHorodatage(@PathVariable UUID id) {
         return ResponseEntity.ok(horodatageService.getHorodatage(id));
     }

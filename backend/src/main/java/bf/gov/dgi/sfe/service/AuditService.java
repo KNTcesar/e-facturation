@@ -15,11 +15,13 @@ public class AuditService {
     private final JournalAuditRepository journalAuditRepository;
 
     @Transactional
+    // Ecrit une trace d'audit simple avec chainage cryptographique.
     public void trace(String action, String entite, UUID entiteId, String acteur) {
         trace(action, entite, entiteId, acteur, null, null, null);
     }
 
     @Transactional
+    // Ecrit une trace d'audit detaillee et calcule le hash chainee de l'entree.
     public void trace(String action,
                       String entite,
                       UUID entiteId,

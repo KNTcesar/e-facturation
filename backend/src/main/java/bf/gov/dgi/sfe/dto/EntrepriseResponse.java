@@ -11,6 +11,7 @@ public record EntrepriseResponse(
         String ifu,
         String rccm,
         String regimeFiscal,
+        String serviceImpotRattachement,
         String adresse,
         String paysCode,
         String ville,
@@ -20,6 +21,7 @@ public record EntrepriseResponse(
         LocalDate dateEffet,
         boolean actif,
         List<EtablissementResponse> etablissements,
-        List<CertificatFiscalResponse> certificats
+        List<CertificatFiscalResponse> certificats,
+        List<CompteBancaireEntrepriseResponse> comptesBancaires
 ) {
 }

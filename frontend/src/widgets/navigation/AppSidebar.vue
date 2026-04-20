@@ -38,7 +38,10 @@ const menu = [
   { label: 'Noyau Fiscal', to: '/noyau-fiscal', icon: 'mdi-file-certificate-outline' },
   { label: 'Créer facture', to: '/factures/creer', icon: 'mdi-file-document-plus-outline' },
   { label: 'Factures', to: '/factures', icon: 'mdi-file-document-outline' },
+  { label: 'Mouvements stock', to: '/mouvements-stock', icon: 'mdi-warehouse' },
+  { label: 'Mouvements caisse', to: '/mouvements-numeraire', icon: 'mdi-cash-multiple' },
   { label: 'Transmissions', to: '/transmissions', icon: 'mdi-transit-connection-variant' },
+  { label: 'Rapports X/Z/A', to: '/rapports', icon: 'mdi-file-chart-outline' },
   { label: 'Audit', to: '/audit', icon: 'mdi-shield-check-outline' },
   { label: 'Parametres', to: '/parametres', icon: 'mdi-cog-outline' },
 ]

@@ -45,5 +45,6 @@ public class Utilisateur extends BaseAuditableEntity {
             joinColumns = @JoinColumn(name = "utilisateur_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    // Roles attribues au compte utilisateur.
     private Set<Role> roles = new HashSet<>();
 }

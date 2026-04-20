@@ -21,6 +21,7 @@ public class LigneFactureController {
     private final LigneFactureService ligneFactureService;
 
     @GetMapping("/facture/{factureId}")
+    // Liste toutes les lignes associees a une facture.
     public ResponseEntity<List<LigneFactureResponse>> listByFacture(@PathVariable UUID factureId) {
         return ResponseEntity.ok(ligneFactureService.listByFacture(factureId));
     }

@@ -7,6 +7,7 @@ public record FactureClientInfoResponse(
         UUID id,
         String nom,
         String ifu,
+        String rccm,
         String adresse,
         String telephone,
         String email

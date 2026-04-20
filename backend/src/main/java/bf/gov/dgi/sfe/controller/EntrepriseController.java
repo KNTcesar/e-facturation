@@ -29,11 +29,13 @@ public class EntrepriseController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
+    // Cree un nouveau profil entreprise fiscal et legal.
     public ResponseEntity<EntrepriseResponse> create(@Valid @RequestBody EntrepriseRequest request) {
         return ResponseEntity.ok(entrepriseService.create(request));
     }
 
     @GetMapping
+    // Liste l'ensemble des profils entreprise enregistres.
     public ResponseEntity<List<EntrepriseResponse>> list() {
         return ResponseEntity.ok(entrepriseService.list());
     }
@@ -52,6 +54,7 @@ public class EntrepriseController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
+    // Met a jour le logo de l'entreprise cible.
     public ResponseEntity<EntrepriseResponse> updateLogo(@PathVariable UUID id, @Valid @RequestBody UpdateEntrepriseLogoRequest request) {
         return ResponseEntity.ok(entrepriseService.updateLogo(id, request.logoUrl()));
     }

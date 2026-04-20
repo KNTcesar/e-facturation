@@ -6,9 +6,17 @@
 export type CertificatFiscalResponse = {
   id: string
   numeroSerie: string
+  numeroIsf: string
   autoriteEmission: string
   dateDebutValidite: string
   dateFinValidite: string
+  actif: boolean
+}
+
+export type CompteBancaireEntrepriseResponse = {
+  id: string
+  referenceCompte: string
+  banque: string | null
   actif: boolean
 }
 
@@ -28,6 +36,7 @@ export type EntrepriseResponse = {
   ifu: string
   rccm: string
   regimeFiscal: string
+  serviceImpotRattachement: string
   adresse: string
   paysCode: string
   ville: string
@@ -38,6 +47,7 @@ export type EntrepriseResponse = {
   actif: boolean
   etablissements: EtablissementResponse[]
   certificats: CertificatFiscalResponse[]
+  comptesBancaires: CompteBancaireEntrepriseResponse[]
 }
 
 export type EntrepriseRequest = {
@@ -45,6 +55,7 @@ export type EntrepriseRequest = {
   ifu: string
   rccm: string
   regimeFiscal: string
+  serviceImpotRattachement: string
   adresse: string
   paysCode: string
   ville: string
@@ -55,6 +66,7 @@ export type EntrepriseRequest = {
   actif: boolean
   etablissements: EtablissementRequest[]
   certificats: CertificatFiscalRequest[]
+  comptesBancaires: CompteBancaireEntrepriseRequest[]
 }
 
 export type EtablissementRequest = {
@@ -68,8 +80,15 @@ export type EtablissementRequest = {
 
 export type CertificatFiscalRequest = {
   numeroSerie: string
+  numeroIsf: string
   autoriteEmission: string
   dateDebutValidite: string
   dateFinValidite: string
+  actif: boolean
+}
+
+export type CompteBancaireEntrepriseRequest = {
+  referenceCompte: string
+  banque?: string | null
   actif: boolean
 }

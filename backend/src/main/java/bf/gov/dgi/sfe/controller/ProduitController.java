@@ -25,11 +25,13 @@ public class ProduitController {
 
     @PreAuthorize("hasAnyRole('ADMIN','COMPTABLE')")
     @PostMapping
+    // Cree un produit/service avec ses parametres de taxation et de prix.
     public ResponseEntity<ProduitResponse> create(@Valid @RequestBody ProduitRequest request) {
         return ResponseEntity.ok(produitService.create(request));
     }
 
     @GetMapping
+    // Liste le catalogue des produits/services.
     public ResponseEntity<List<ProduitResponse>> list() {
         return ResponseEntity.ok(produitService.list());
     }

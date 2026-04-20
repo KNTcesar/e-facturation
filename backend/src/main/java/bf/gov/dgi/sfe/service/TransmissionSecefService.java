@@ -35,16 +35,19 @@ public class TransmissionSecefService {
     private int maxRetries;
 
     @Transactional(readOnly = true)
+    // Liste les transmissions fiscales connues.
     public List<TransmissionSecefResponse> list() {
         return transmissionSecefRepository.findAll().stream().map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
+    // Retourne une transmission par identifiant.
     public TransmissionSecefResponse get(UUID id) {
         return toResponse(transmissionSecefRepository.findById(Objects.requireNonNull(id, "id is required")).orElseThrow(() -> new IllegalArgumentException("Transmission introuvable")));
     }
 
     @Transactional
+    // Envoie un lot limite de transmissions en attente ou en retry.
     public List<SecefDispatchResponse> dispatchPending() {
         List<TransmissionSecef> pending = transmissionSecefRepository.findTop20ByStatutInOrderByCreatedAtAsc(
                 List.of(StatutTransmission.PENDING, StatutTransmission.RETRY_SCHEDULED)
@@ -53,6 +56,7 @@ public class TransmissionSecefService {
     }
 
     @Transactional
+    // Envoie une transmission specifique.
     public SecefDispatchResponse dispatch(UUID id) {
         TransmissionSecef tx = transmissionSecefRepository.findById(Objects.requireNonNull(id, "id is required"))
                 .orElseThrow(() -> new IllegalArgumentException("Transmission introuvable"));
@@ -60,6 +64,7 @@ public class TransmissionSecefService {
     }
 
     @Transactional
+    // Traite l'accuse de reception/rejet d'une transmission SECeF.
     public TransmissionSecefResponse processAck(UUID id, SecefAckRequest request) {
         TransmissionSecef tx = transmissionSecefRepository.findById(Objects.requireNonNull(id, "id is required"))
                 .orElseThrow(() -> new IllegalArgumentException("Transmission introuvable"));
@@ -91,10 +96,12 @@ public class TransmissionSecefService {
     // Reprise automatique des transmissions en attente de dispatch.
     @Scheduled(fixedDelayString = "${app.secef.dispatch-interval-ms:60000}")
     @Transactional
+    // Tache planifiee de reprise automatique des envois en attente.
     public void autoDispatchPending() {
         dispatchPending();
     }
 
+    // Execute la logique d'envoi et met a jour les statuts facture/transmission.
     private SecefDispatchResponse dispatchInternal(TransmissionSecef tx) {
         if (tx.getStatut() == StatutTransmission.ACK_ACCEPTED || tx.getStatut() == StatutTransmission.ACK_REJECTED) {
             return toDispatchResponse(tx);
@@ -128,6 +135,7 @@ public class TransmissionSecefService {
         return toDispatchResponse(tx);
     }
 
+    // Convertit une transmission en reponse de dispatch simplifiee.
     private SecefDispatchResponse toDispatchResponse(TransmissionSecef tx) {
         return new SecefDispatchResponse(
                 tx.getId(),
@@ -139,12 +147,14 @@ public class TransmissionSecefService {
         );
     }
 
+    // Convertit une transmission en DTO de consultation complet.
     private TransmissionSecefResponse toResponse(TransmissionSecef tx) {
         return new TransmissionSecefResponse(
                 tx.getId(),
                 tx.getFacture().getId(),
                 tx.getFormatPayload(),
                 tx.getPayloadHash(),
+            tx.getPayloadData(),
                 tx.getStatut(),
                 tx.getCodeRetour(),
                 tx.getMessageRetour(),
@@ -154,6 +164,7 @@ public class TransmissionSecefService {
         );
     }
 
+    // Retourne l'acteur courant ou "system" si aucun utilisateur n'est connecte.
     private String resolveActor() {
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             return "system";

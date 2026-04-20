@@ -15,6 +15,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import bf.gov.dgi.sfe.enums.StatutFacture;
+import bf.gov.dgi.sfe.enums.TypeFacture;
+import bf.gov.dgi.sfe.enums.NatureFactureAvoir;
+import bf.gov.dgi.sfe.enums.GroupePsvb;
+import bf.gov.dgi.sfe.enums.ModePrixArticle;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -28,6 +32,25 @@ import java.util.List;
 @Table(name = "factures")
 // Document fiscal principal genere par le systeme.
 public class Facture extends BaseAuditableEntity {
+
+    // Type de facture selon nomenclature DGI (FV/FT/FA/EV/ET/EA).
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TypeFacture typeFacture;
+
+    // Mode de prix unitaire applique sur la facture (HT/TTC).
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ModePrixArticle modePrixUnitaire;
+
+    // Nature obligatoire pour les factures d'avoir.
+    @Enumerated(EnumType.STRING)
+    @Column
+    private NatureFactureAvoir natureFactureAvoir;
+
+    // Reference de facture originale dans le cadre d'un avoir.
+    @Column(length = 50)
+    private String referenceFactureOriginale;
 
     // Numero unique attribue par serie.
     @Column(nullable = false, unique = true)
@@ -55,6 +78,16 @@ public class Facture extends BaseAuditableEntity {
 
     @Column(nullable = false, precision = 18, scale = 2)
     private BigDecimal totalTtc;
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    private GroupePsvb groupePsvb;
+
+    @Column(precision = 5, scale = 2)
+    private BigDecimal tauxPsvb;
+
+    @Column(nullable = false, precision = 18, scale = 2)
+    private BigDecimal montantPsvb;
 
     // Code d'authentification exigé pour la verification.
     @Column(nullable = false, unique = true)
@@ -108,4 +141,12 @@ public class Facture extends BaseAuditableEntity {
     // Lignes detaillees de la facture.
     @OneToMany(mappedBy = "facture", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LigneFacture> lignes = new ArrayList<>();
+
+    // Ventilation des paiements de la facture.
+    @OneToMany(mappedBy = "facture", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FacturePaiement> paiements = new ArrayList<>();
+
+    // Lignes de commentaires A..H affichees sur la facture.
+    @OneToMany(mappedBy = "facture", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FactureCommentaire> commentaires = new ArrayList<>();
 }

@@ -24,6 +24,17 @@ export type AuditChainVerificationResponse = {
   message: string
 }
 
+// Entrée du journal électronique (documents FACTURE/RAPPORT).
+export type JournalElectroniqueEntryResponse = {
+  id: string
+  typeDocument: 'FACTURE' | 'RAPPORT'
+  documentId: string
+  referenceDocument: string
+  codeSecefDgi: string | null
+  contenuJson: string
+  createdAt: string
+}
+
 // Historique complet du journal d'audit.
 export async function listAuditEntries() {
   const { data } = await http.get<AuditEntryResponse[]>('/api/journal-audit')
@@ -33,5 +44,11 @@ export async function listAuditEntries() {
 // Vérifie l'intégrité du chaînage cryptographique.
 export async function verifyAuditChain() {
   const { data } = await http.get<AuditChainVerificationResponse>('/api/journal-audit/verify')
+  return data
+}
+
+// Liste les documents fiscaux stockés dans le journal électronique.
+export async function listJournalElectroniqueEntries() {
+  const { data } = await http.get<JournalElectroniqueEntryResponse[]>('/api/journal-electronique')
   return data
 }

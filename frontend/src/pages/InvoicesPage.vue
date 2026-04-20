@@ -53,6 +53,20 @@
       <v-col cols="12" lg="7">
         <v-card class="soft-panel pa-4" rounded="xl" elevation="0">
           <div class="d-flex align-center ga-2 mb-3">
+            <v-chip size="small" color="primary" variant="tonal">
+              Mode prix: {{ selected.modePrixUnitaire }}
+            </v-chip>
+            <v-chip
+              v-if="selected.paiements.length > 0"
+              size="small"
+              color="secondary"
+              variant="tonal"
+            >
+              Paiement: {{ selected.paiements[0].modePaiement }}
+            </v-chip>
+          </div>
+
+          <div class="d-flex align-center ga-2 mb-3">
             <v-text-field
               v-model="lookupId"
               label="Rechercher facture par UUID"
@@ -255,6 +269,11 @@
             </div>
 
             <div class="market-block">
+              <div><strong>Mentions facture:</strong> {{ factureMentions.join(' | ') }}</div>
+              <div><strong>Références cadastrales (SSSSLLLPPPP):</strong> {{ referencesCadastrales }}</div>
+              <div><strong>Régime d'imposition:</strong> {{ regimeImposition }}</div>
+              <div><strong>Service des impôts:</strong> {{ serviceImpots }}</div>
+              <div><strong>Références comptes bancaires:</strong> {{ referencesComptesBancaires }}</div>
               <div><strong>Référence marché:</strong> {{ selected.referenceMarche ?? '-' }}</div>
               <div><strong>Objet marché:</strong> {{ selected.objetMarche ?? '-' }}</div>
               <div><strong>Date marché:</strong> {{ selected.dateMarche ?? '-' }}</div>
@@ -286,6 +305,13 @@
             <div class="totals-grid">
               <div class="notes-box">
                 <div><strong>Code auth:</strong> {{ selected.codeAuthentification }}</div>
+                <div>
+                  <strong>Mode(s) paiement:</strong>
+                  <span v-if="selected.paiements.length > 0">
+                    {{ selected.paiements.map((p) => p.modePaiement).join(', ') }}
+                  </span>
+                  <span v-else>-</span>
+                </div>
                 <div><strong>Signature:</strong> {{ signature ? 'OK' : 'NON' }}</div>
                 <div><strong>Horodatage:</strong> {{ timestamp ? 'OK' : 'NON' }}</div>
                 <div class="client-qr-wrap mt-2">
@@ -296,57 +322,16 @@
               <div class="totals-box">
                 <div><span>Sous-total HT</span><strong>{{ formatCfa(selected.totalHt) }}</strong></div>
                 <div><span>TVA</span><strong>{{ formatCfa(selected.totalTva) }}</strong></div>
+                <div><span>Taxe spécifique</span><strong>{{ formatCfa(totalTaxeSpecifique) }}</strong></div>
+                <div><span>Timbre quittance (espèces)</span><strong>{{ formatCfa(montantTimbreQuittance) }}</strong></div>
                 <div class="total-final"><span>TOTAL TTC</span><strong>{{ formatCfa(selected.totalTtc) }}</strong></div>
+                <div><span>Total en lettres</span><strong>{{ montantTotalEnLettres }}</strong></div>
+                <div><span>ISF</span><strong>{{ identifiantIsf }}</strong></div>
+                <div><span>Opérateur</span><strong>{{ nomOperateur }}</strong></div>
+                <div><span>Date/heure établissement</span><strong>{{ dateHeureEtablissement }}</strong></div>
               </div>
             </div>
 
-            <div class="invoice-footer-message">
-              <div style="font-weight:700;margin-bottom:12px;color:#0a495f;font-size:15px;border-bottom:2px solid #0a6f8a;padding-bottom:8px;">PLATEFORME SFE - E-FACTURATION DGI BURKINA FASO</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:16px;">
-                <div>
-                  <p style="font-weight:600;color:#0a6f8a;margin-bottom:6px;">CONTACT SUPPORT</p>
-                  <p style="margin:0 0 4px 0;"><strong>Email:</strong> support@sfe.bf</p>
-                  <p style="margin:0 0 4px 0;"><strong>Téléphone:</strong> +226 25 00 00 00</p>
-                  <p style="margin:0 0 4px 0;"><strong>Adresse:</strong> Ouagadougou, Burkina Faso</p>
-                  <p style="margin:0;"><strong>Horaires:</strong> Lun-Ven 08h-17h (GMT)</p>
-                </div>
-                <div>
-                  <p style="font-weight:600;color:#0a6f8a;margin-bottom:6px;">SERVICES FOURNIS</p>
-                  <p style="margin:0 0 4px 0;">• Portail e-facturation conforme DGI</p>
-                  <p style="margin:0 0 4px 0;">• Transmission sécurisée des factures</p>
-                  <p style="margin:0 0 4px 0;">• Archivage électronique sécurisé</p>
-                  <p style="margin:0;">• Audit trail immutable et traçable</p>
-                </div>
-              </div>
-              <div style="background:#f0f7fa;padding:12px;border-radius:6px;margin-bottom:16px;border-left:4px solid #0a6f8a;">
-                <p style="font-weight:600;color:#0a495f;margin-bottom:6px;">CONDITIONS D'UTILISATION</p>
-                <p style="margin:0 0 4px 0;font-size:12px;">Toute facture émise via cette plateforme est conforme aux normes de la DGI et du SECeF. L'utilisateur s'engage à respecter les conditions d'utilisation et les réglementations fiscales en vigueur au Burkina Faso.</p>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:16px;">
-                <div>
-                  <p style="font-weight:600;color:#0a6f8a;margin-bottom:6px;">SÉCURITÉ & CONFORMITÉ</p>
-                  <p style="margin:0 0 3px 0;font-size:12px;">✓ Chiffrement SSL/TLS 256-bit</p>
-                  <p style="margin:0 0 3px 0;font-size:12px;">✓ Audit trail avec SHA-256</p>
-                  <p style="margin:0 0 3px 0;font-size:12px;">✓ Conforme DGI/SECeF</p>
-                  <p style="margin:0;font-size:12px;">✓ Sauvegarde redondante</p>
-                </div>
-                <div>
-                  <p style="font-weight:600;color:#0a6f8a;margin-bottom:6px;">DÉLAIS DE RÉPONSE</p>
-                  <p style="margin:0 0 3px 0;font-size:12px;">• Transmission: Immédiate</p>
-                  <p style="margin:0 0 3px 0;font-size:12px;">• Accusé réception: 24h</p>
-                  <p style="margin:0 0 3px 0;font-size:12px;">• Support technique: 4h</p>
-                  <p style="margin:0;font-size:12px;">• Archivage: 10 ans minimum</p>
-                </div>
-              </div>
-              <div style="border-top:2px solid #dbe1ea;padding-top:12px;">
-                <p style="font-weight:600;color:#0a6f8a;margin-bottom:8px;">RESPONSABILITÉS DE L'UTILISATEUR</p>
-                <p style="margin:0 0 4px 0;font-size:12px;">L'utilisateur est responsable de l'exactitude des données soumises, du respect des délais de transmission et de la gestion sécurisée de ses identifiants.</p>
-              </div>
-              <div style="border-top:2px solid #dbe1ea;padding-top:12px;margin-top:12px;text-align:center;">
-                <p style="font-weight:600;color:#0a495f;font-size:12px;margin:0 0 2px 0;">Version 1.0.0 | 2026</p>
-                <p style="font-size:11px;color:#617083;margin:0;">© 2026 Plateforme SFE. Tous droits réservés.</p>
-              </div>
-            </div>
           </v-sheet>
 
           <v-expansion-panels class="mt-3" variant="accordion">
@@ -388,6 +373,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import QRCode from 'qrcode'
 import PageHeader from '@/shared/ui/PageHeader.vue'
+import { useAuthStore } from '@/features/auth/store/useAuthStore'
 import { useEntrepriseStore } from '@/features/entreprises/store/useEntrepriseStore'
 import { invoiceStatusUi } from '@/shared/utils/status'
 import {
@@ -405,16 +391,24 @@ import {
 import InvoiceComplianceCard from '@/features/invoices/components/InvoiceComplianceCard.vue'
 
 const entrepriseStore = useEntrepriseStore()
+const authStore = useAuthStore()
 const invoices = ref<InvoiceResponse[]>([])
 const selected = ref<InvoiceResponse>({
   id: '',
   numero: '-',
   dateEmission: '-',
+  typeFacture: 'FV',
+  modePrixUnitaire: 'HT',
+  natureFactureAvoir: null,
+  referenceFactureOriginale: null,
   statut: 'CERTIFIEE',
   exercice: new Date().getFullYear(),
   totalHt: 0,
   totalTva: 0,
   totalTtc: 0,
+  groupePsvb: null,
+  tauxPsvb: null,
+  montantPsvb: 0,
   codeAuthentification: '-',
   qrPayload: '-',
   motifAnnulation: null,
@@ -426,6 +420,8 @@ const selected = ref<InvoiceResponse>({
   validationDgi: 'EN_ATTENTE',
   entreprise: null,
   client: null,
+  commentaires: [],
+  paiements: [],
   lignes: [],
 })
 
@@ -449,6 +445,56 @@ const snackbar = reactive({
 })
 
 const route = useRoute()
+
+const referencesCadastrales = computed(() => '[non renseignées]')
+const regimeImposition = computed(() => entrepriseStore.activeEntreprise?.regimeFiscal ?? '[non renseigné]')
+const serviceImpots = computed(() => entrepriseStore.activeEntreprise?.serviceImpotRattachement ?? '[non renseigné]')
+const referencesComptesBancaires = computed(() => {
+  const comptes = entrepriseStore.activeEntreprise?.comptesBancaires ?? []
+  const actifs = comptes.filter((c) => c.actif).map((c) => c.referenceCompte)
+  return actifs.length > 0 ? actifs.join(', ') : '[non renseignées]'
+})
+
+const identifiantIsf = computed(() => {
+  const certificats = entrepriseStore.activeEntreprise?.certificats ?? []
+  const actif = certificats.find((c) => c.actif)
+  return actif?.numeroIsf ?? '[non renseigné]'
+})
+
+const nomOperateur = computed(() => authStore.username || '[non renseigné]')
+const dateHeureEtablissement = computed(() => `${selected.value.dateEmission || '-'} ${new Date().toLocaleTimeString('fr-BF')}`)
+
+const factureMentions = computed(() => {
+  const mentions: string[] = []
+  if (selected.value.typeFacture === 'FA' || selected.value.typeFacture === 'EA') {
+    const nature = selected.value.natureFactureAvoir ? ` (${selected.value.natureFactureAvoir})` : ''
+    mentions.push(`FACTURE D'AVOIR${nature}`)
+  }
+  if (selected.value.typeFacture === 'EV' || selected.value.typeFacture === 'ET' || selected.value.typeFacture === 'EA') {
+    mentions.push('EXPORTATION')
+  }
+  if (selected.value.typeFacture === 'FT' || selected.value.typeFacture === 'ET') {
+    mentions.push("D'ACOMPTE")
+  }
+  mentions.push('ORIGINAL')
+  return mentions
+})
+
+const totalTaxeSpecifique = computed(() => selected.value.lignes.reduce((acc, line) => acc + Number(line.montantTaxeSpecifique || 0), 0))
+
+const isPaiementEspeces = computed(() => selected.value.paiements.some((p) => p.modePaiement === 'ESPECES'))
+const montantTimbreQuittance = computed(() => {
+  if (!isPaiementEspeces.value) {
+    return 0
+  }
+  const TIMBRE_RATE = 0.004
+  return Math.round((Number(selected.value.totalTtc) * TIMBRE_RATE + Number.EPSILON) * 100) / 100
+})
+
+const montantTotalEnLettres = computed(() => {
+  const total = Number(selected.value.totalTtc || 0)
+  return `${numberToFrenchWords(total)} FCFA`
+})
 
 const signForm = reactive({
   certificatBase64: '',
@@ -715,6 +761,56 @@ async function onCancelInvoice() {
 
 function formatCfa(value: number) {
   return new Intl.NumberFormat('fr-FR').format(value) + ' FCFA'
+}
+
+function numberToFrenchWords(value: number) {
+  const rounded = Math.round(value)
+  if (!Number.isFinite(rounded) || rounded < 0) return 'Montant invalide'
+  if (rounded === 0) return 'zéro'
+
+  const units = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf']
+  const teens = ['dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf']
+  const tens = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante']
+
+  const underHundred = (n: number): string => {
+    if (n < 10) return units[n]
+    if (n < 20) return teens[n - 10]
+    if (n < 70) {
+      const d = Math.floor(n / 10)
+      const u = n % 10
+      if (u === 0) return tens[d]
+      if (u === 1) return `${tens[d]} et un`
+      return `${tens[d]}-${units[u]}`
+    }
+    if (n < 80) {
+      if (n === 71) return 'soixante et onze'
+      return `soixante-${underHundred(n - 60)}`
+    }
+    if (n === 80) return 'quatre-vingts'
+    return `quatre-vingt-${underHundred(n - 80)}`
+  }
+
+  const underThousand = (n: number): string => {
+    if (n < 100) return underHundred(n)
+    const c = Math.floor(n / 100)
+    const r = n % 100
+    const hundred = c === 1 ? 'cent' : `${units[c]} cent`
+    if (r === 0) return c > 1 ? `${hundred}s` : hundred
+    return `${hundred} ${underHundred(r)}`
+  }
+
+  const billions = Math.floor(rounded / 1000000000)
+  const millions = Math.floor((rounded % 1000000000) / 1000000)
+  const thousands = Math.floor((rounded % 1000000) / 1000)
+  const rest = rounded % 1000
+
+  const parts: string[] = []
+  if (billions > 0) parts.push(`${underThousand(billions)} milliard${billions > 1 ? 's' : ''}`)
+  if (millions > 0) parts.push(`${underThousand(millions)} million${millions > 1 ? 's' : ''}`)
+  if (thousands > 0) parts.push(thousands === 1 ? 'mille' : `${underThousand(thousands)} mille`)
+  if (rest > 0) parts.push(underThousand(rest))
+
+  return parts.join(' ')
 }
 
 // Normalise un champ fichier VFileInput en un seul fichier exploitable.

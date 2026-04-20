@@ -26,6 +26,11 @@ app:
   secef:
     max-retries: ${APP_SECEF_MAX_RETRIES:3}
     dispatch-interval-ms: ${APP_SECEF_DISPATCH_INTERVAL_MS:60000}
+  mcf:
+    default-host: ${APP_MCF_DEFAULT_HOST:127.0.0.1}
+    default-port: ${APP_MCF_DEFAULT_PORT:9090}
+    alert-threshold-days: ${APP_MCF_ALERT_THRESHOLD_DAYS:7}
+    daily-check-interval-ms: ${APP_MCF_DAILY_CHECK_INTERVAL_MS:86400000}
 
 management:
   endpoints:

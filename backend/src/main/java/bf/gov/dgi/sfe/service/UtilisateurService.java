@@ -26,6 +26,7 @@ public class UtilisateurService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
+    // Cree un utilisateur et lui associe ses roles applicatifs.
     public UtilisateurResponse create(UtilisateurRequest request) {
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setUsername(request.username());
@@ -42,16 +43,19 @@ public class UtilisateurService {
     }
 
     @Transactional(readOnly = true)
+    // Liste les comptes utilisateurs.
     public List<UtilisateurResponse> list() {
         return utilisateurRepository.findAll().stream().map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
+    // Recupere un utilisateur par identifiant.
     public UtilisateurResponse get(UUID id) {
         return toResponse(utilisateurRepository.findById(Objects.requireNonNull(id, "id is required")).orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable")));
     }
 
     @Transactional
+    // Active ou desactive un compte utilisateur.
     public UtilisateurResponse setActivation(UUID id, boolean actif) {
         Utilisateur utilisateur = utilisateurRepository.findById(Objects.requireNonNull(id, "id is required"))
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
@@ -60,6 +64,7 @@ public class UtilisateurService {
     }
 
     @Transactional
+    // Reinitialise le mot de passe d'un utilisateur.
     public UtilisateurResponse resetPassword(UUID id, String newPassword) {
         if (newPassword == null || newPassword.isBlank()) {
             throw new IllegalArgumentException("Nouveau mot de passe obligatoire");
@@ -71,12 +76,14 @@ public class UtilisateurService {
     }
 
     @Transactional
+    // Supprime definitivement un compte utilisateur.
     public void delete(UUID id) {
         Utilisateur utilisateur = utilisateurRepository.findById(Objects.requireNonNull(id, "id is required"))
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
         utilisateurRepository.delete(utilisateur);
     }
 
+    // Convertit l'entite utilisateur en DTO de reponse.
     private UtilisateurResponse toResponse(Utilisateur utilisateur) {
         Set<String> roles = utilisateur.getRoles().stream().map(Role::getCode).collect(java.util.stream.Collectors.toSet());
         return new UtilisateurResponse(utilisateur.getId(), utilisateur.getUsername(), utilisateur.getNomComplet(), utilisateur.isActif(), roles);

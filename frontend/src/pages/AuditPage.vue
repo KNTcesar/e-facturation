@@ -70,6 +70,47 @@
         </tbody>
       </table>
     </v-card>
+
+    <v-card class="soft-panel pa-4 mt-4" rounded="xl" elevation="0">
+      <div class="d-flex align-center justify-space-between ga-2 flex-wrap mb-3">
+        <h3 class="mb-0">Journal électronique</h3>
+        <v-btn color="secondary" variant="tonal" prepend-icon="mdi-refresh" :loading="loading" @click="load">
+          Recharger
+        </v-btn>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type document</th>
+            <th>Référence</th>
+            <th>Code SECeF/DGI</th>
+            <th>Document ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="entry in journalEntries" :key="entry.id">
+            <td>{{ formatDate(entry.createdAt) }}</td>
+            <td>
+              <v-chip
+                size="small"
+                :color="entry.typeDocument === 'FACTURE' ? 'primary' : 'info'"
+                variant="tonal"
+              >
+                {{ entry.typeDocument }}
+              </v-chip>
+            </td>
+            <td>{{ entry.referenceDocument }}</td>
+            <td>{{ entry.codeSecefDgi ?? '-' }}</td>
+            <td class="mono">{{ entry.documentId }}</td>
+          </tr>
+          <tr v-if="journalEntries.length === 0">
+            <td colspan="5" class="text-center py-4">Aucune entree de journal electronique disponible.</td>
+          </tr>
+        </tbody>
+      </table>
+    </v-card>
   </div>
 </template>
 
@@ -79,12 +120,15 @@ import { computed, onMounted, ref } from 'vue'
 import PageHeader from '@/shared/ui/PageHeader.vue'
 import {
   listAuditEntries,
+  listJournalElectroniqueEntries,
   verifyAuditChain,
   type AuditEntryResponse,
   type AuditChainVerificationResponse,
+  type JournalElectroniqueEntryResponse,
 } from '@/features/audit/api/auditApi'
 
 const entries = ref<AuditEntryResponse[]>([])
+const journalEntries = ref<JournalElectroniqueEntryResponse[]>([])
 const verification = ref<AuditChainVerificationResponse | null>(null)
 const loading = ref(false)
 const verifying = ref(false)
@@ -104,9 +148,14 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    entries.value = await listAuditEntries()
+    const [auditData, journalData] = await Promise.all([
+      listAuditEntries(),
+      listJournalElectroniqueEntries(),
+    ])
+    entries.value = auditData
+    journalEntries.value = journalData
   } catch {
-    error.value = "Impossible de charger le journal d'audit."
+    error.value = "Impossible de charger les journaux d'audit/electronique."
   } finally {
     loading.value = false
   }

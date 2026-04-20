@@ -49,6 +49,21 @@ const routes = [
     component: () => import('@/pages/TransmissionsPage.vue'),
   },
   {
+    path: '/mouvements-numeraire',
+    name: 'mouvements-numeraire',
+    component: () => import('@/pages/CashMovementsPage.vue'),
+  },
+  {
+    path: '/mouvements-stock',
+    name: 'mouvements-stock',
+    component: () => import('@/pages/StockMovementsPage.vue'),
+  },
+  {
+    path: '/rapports',
+    name: 'rapports',
+    component: () => import('@/pages/ReportsPage.vue'),
+  },
+  {
     path: '/audit',
     name: 'audit',
     component: () => import('@/pages/AuditPage.vue'),

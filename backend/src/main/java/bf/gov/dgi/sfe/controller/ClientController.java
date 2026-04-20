@@ -23,13 +23,15 @@ public class ClientController {
 
     private final ClientService clientService;
 
-    @PreAuthorize("hasAnyRole('ADMIN','COMPTABLE')")
+    @PreAuthorize("hasAnyRole('ADMIN','COMPTABLE','CAISSIER')")
     @PostMapping
+    // Cree un client avec ses informations d'identification et de contact.
     public ResponseEntity<ClientResponse> create(@Valid @RequestBody ClientRequest request) {
         return ResponseEntity.ok(clientService.create(request));
     }
 
     @GetMapping
+    // Liste les clients disponibles.
     public ResponseEntity<List<ClientResponse>> list() {
         return ResponseEntity.ok(clientService.list());
     }

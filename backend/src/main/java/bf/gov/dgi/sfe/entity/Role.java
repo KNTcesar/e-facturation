@@ -15,9 +15,11 @@ import lombok.Setter;
 // Catalogue des roles applicatifs pour la securite et les droits.
 public class Role extends BaseAuditableEntity {
 
+    // Code technique unique du role.
     @Column(nullable = false, unique = true)
     private String code;
 
+    // Libelle lisible du role.
     @Column(nullable = false)
     private String libelle;
 }

@@ -5,11 +5,18 @@ export type InvoiceResponse = {
   id: string
   numero: string
   dateEmission: string
+  typeFacture: 'FV' | 'FT' | 'FA' | 'EV' | 'ET' | 'EA'
+  modePrixUnitaire: 'HT' | 'TTC'
+  natureFactureAvoir: 'COR' | 'RAN' | 'RAM' | 'IRRR' | null
+  referenceFactureOriginale: string | null
   statut: 'BROUILLON' | 'CERTIFIEE' | 'ENVOYEE' | 'ACCEPTEE' | 'REJETEE' | 'ANNULEE'
   exercice: number
   totalHt: number
   totalTva: number
   totalTtc: number
+  groupePsvb: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | null
+  tauxPsvb: number | null
+  montantPsvb: number
   codeAuthentification: string
   qrPayload: string
   motifAnnulation: string | null
@@ -21,6 +28,8 @@ export type InvoiceResponse = {
   validationDgi: 'VALIDEE' | 'REJETEE' | 'EN_ATTENTE'
   entreprise: InvoiceEntrepriseInfo | null
   client: InvoiceClientInfo | null
+  commentaires: InvoiceCommentInfo[]
+  paiements: InvoicePaymentInfo[]
   lignes: InvoiceLineInfo[]
 }
 
@@ -42,7 +51,8 @@ export type InvoiceEntrepriseInfo = {
 export type InvoiceClientInfo = {
   id: string
   nom: string
-  ifu: string
+  ifu: string | null
+  rccm: string | null
   adresse: string
   telephone: string | null
   email: string | null
@@ -63,10 +73,30 @@ export type InvoiceLineInfo = {
   quantite: number
   prixUnitaireHt: number
   tauxTva: number
+  groupeTaxation: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P'
+  montantTaxeSpecifique: number
+  baseTaxableTva: number
   montantHt: number
   montantTva: number
   montantTtc: number
   produit: InvoiceProductInfo
+}
+
+// Commentaire imprime dans la facture (lignes A..H).
+export type InvoiceCommentInfo = {
+  id: string
+  code: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H'
+  etiquette: string | null
+  contenu: string | null
+  ordreAffichage: number
+}
+
+// Ventilation des paiements rattaches a la facture.
+export type InvoicePaymentInfo = {
+  id: string
+  modePaiement: 'VIREMENT' | 'CARTE_BANCAIRE' | 'MOBILE_MONEY' | 'CHEQUE' | 'ESPECES' | 'CREDIT'
+  montant: number
+  referencePaiement: string | null
 }
 
 // Résultat de la signature d'une facture.
@@ -95,11 +125,26 @@ export type CreateInvoiceRequest = {
   clientId: string
   serieCode: string
   dateEmission: string
-  referenceMarche: string
-  objetMarche: string
-  dateMarche: string
-  dateDebutExecution: string
-  dateFinExecution: string
+  typeFacture?: 'FV' | 'FT' | 'FA' | 'EV' | 'ET' | 'EA'
+  modePrixUnitaire?: 'HT' | 'TTC'
+  natureFactureAvoir?: 'COR' | 'RAN' | 'RAM' | 'IRRR' | null
+  referenceFactureOriginale?: string
+  groupePsvb?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | null
+  referenceMarche?: string
+  objetMarche?: string
+  dateMarche?: string
+  dateDebutExecution?: string
+  dateFinExecution?: string
+  commentaires?: Array<{
+    code: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H'
+    etiquette?: string
+    contenu?: string
+  }>
+  paiements?: Array<{
+    modePaiement: 'VIREMENT' | 'CARTE_BANCAIRE' | 'MOBILE_MONEY' | 'CHEQUE' | 'ESPECES' | 'CREDIT'
+    montant: number
+    referencePaiement?: string
+  }>
   lignes: Array<{
     produitId: string
     quantite: number
